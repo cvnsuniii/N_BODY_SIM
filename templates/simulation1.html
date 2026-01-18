@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://pyscript.net/releases/2025.11.2/core.css"
+    />
+    <script
+      defer
+      src="https://pyscript.net/releases/2025.11.2/core.js"
+    ></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N Body Simulation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+      em {
+        color: rgb(73, 73, 156);
+        font-style: normal;
+      }
+    </style>
+  </head>
+  <body style="background-color: rgb(41, 73, 106)">
+    <h1>SIMULATION PARAMETERS👾:</h1>
+    <form class="container" method="POST" >
+      <div class="form-row">
+        <label for="no_of_objects">Number of bodies:</label>
+        <input type="text" id="no_of_objects" name="no_of_objects" value="{{ request.form['no_of_objects'] }}" />
+      </div>
+      <div>
+        <h4>
+          <em
+            >Enter the below parameters in SI units seperated by commas in
+            scientific notation</em
+          >
+        </h4>
+        <div class="form-row">
+          <label for="masses">Masses:</label>
+          <input type="text" id="masses" name="masses" value="{{ request.form['masses'] }}" />
+        </div>
+        <h3>Position:</h3>
+        <div class="form-row">
+          <label for="pos_x">x-direction:</label>
+          <input type="text" id="pos_x" name="pos_x" value="{{ request.form['pos_x'] }}" />
+        </div>
+        <br />
+        <div class="form-row">
+          <label for="pos_y">y-direction:</label>
+          <input type="text" id="pos_y" name="pos_y" value="{{ request.form['pos_y'] }}"/>
+        </div>
+        <br />
+        <div class="form-row">
+          <label for="pos_z">z-direction:</label>
+          <input type="text" id="pos_z" name="pos_z" value="{{ request.form['pos_z'] }}"/>
+        </div>
+        <br />
+        <h3>Initial velocity:</h3>
+        <div class="form-row">
+          <label for="vel_x">x-direction:</label>
+          <input type="text" id="vel_x" name="vel_x" value="{{ request.form['vel_x'] }}"/>
+        </div>
+        <br />
+        <div class="form-row">
+          <label for="vel_y">y-direction:</label>
+          <input type="text" id="vel_y" name="vel_y" value="{{ request.form['vel_y'] }}"/>
+        </div>
+        <br />
+        <div class="form-row">
+          <label for="vel_z">z-direction:</label>
+          <input type="text" id="vel_z" name="vel_z" value="{{ request.form['vel_z'] }}"/>
+        </div>
+        <br />
+        <div class="form-row">
+          <label for="sim_frequency"
+            >Calculation rate (ms) — adjust for computer speed.</label
+          >
+          <select name="sim_frequency" id="sim_frequency" value="{{ request.form['sim_frequency'] }}">
+            <option>100</option>
+            <option>250</option>
+            <option>500</option>
+            <option>750</option>
+            <option>1000</option>
+            <option>2000</option>
+          </select>
+        </div>
+        <h3>Simulation speed:</h3>
+        <div class="speed-control">
+          <button type="button" onclick="decrement()">-</button>
+          <span id="sim_speed" >1</span>
+          <button type="button" onclick="increment()">+</button>
+        </div>
+        <input type="hidden" id="sim_speed_display" value="{{ request.form['sim_speed'] }}"/>
+
+        <script>
+            let valuek = 1;
+            let step = 0;
+            
+            const multipliers = [2.5, 2, 2];
+            const sim_speed = document.getElementById("sim_speed");
+            const simSpeedInput = document.getElementById("sim_speed_display");
+            sim_speed.innerText = valuek;
+            simSpeedInput.text = valuek;
+
+            function increment(){
+                valuek *= multipliers[step % multipliers.length];
+                step++;
+                sim_speed.innerText = valuek;
+                simSpeedInput.text = valuek;
+            }
+            
+            function decrement(){
+                if (step > 0) {
+                    step--;
+                    valuek /= multipliers[step % multipliers.length];
+                    sim_speed.innerText = valuek;
+                    simSpeedInput.text = valuek;
+                }
+            }
+        </script>
+        <br />
+
+        <div>
+          <button class="submit-btn" type="submit">Run Simulation</button>
+        </div>
+      </div>
+      <br />
+      <a href="#">Jump to top</a>
+    </form>
+  </body>
+</html>
