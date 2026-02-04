@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'login.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: .fromSeed(seedColor: const Color.fromARGB(255, 35, 35, 35)),
       ),
       home: const MyHomePage(title: 'N body Simulation'),
     );
@@ -84,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions:<Widget>[
+          FloatingActionButton(hoverElevation:2,onPressed:(){ Navigator.of(context).push(MaterialPageRoute(builder:  (context)=>Login(title:"hi") ));},tooltip:"login to view your simulations",child:Container(decoration:BoxDecoration(border: Border.all(width:2),))),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -109,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            Container(decoration:BoxDecoration(image:DecorationImage(image:AssetImage("assets/images/background_main.png"))))
           ],
         ),
       ),
