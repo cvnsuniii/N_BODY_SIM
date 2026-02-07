@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'login.dart';
-void main() {
+import 'sim_para.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   runApp(const MyApp());
 }
 
@@ -54,73 +58,102 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String user="";
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  late Future<Box> future;
+  @override
+  void initState(){
+    super.initState();
+    future=Hive.openBox('data');
   }
-
   @override
   Widget build(BuildContext context) {
+    
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        actions:<Widget>[
-          FloatingActionButton(hoverElevation:2,onPressed:(){ Navigator.of(context).push(MaterialPageRoute(builder:  (context)=>Login(title:"hi") ));},tooltip:"login to view your simulations",child:Container(decoration:BoxDecoration(border: Border.all(width:2),))),
-        ],
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+    return FutureBuilder(
+      future:future,
+      builder:(context,snapshot){
+        if (snapshot.connectionState==ConnectionState.done){
+          Map<String,List<dynamic>> data=snapshot.data!.get('incomplete',defaultValue:{'sim1':[]})!;
+          final keys=data.keys.toList();
+          final values=data.values.toList();
+          print(data);
+          return Scaffold(
+            appBar: AppBar(
+              actionsPadding:EdgeInsets.all(2),
+              // TRY THIS: Try changing the color here to a specific color (to
+              // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+              // change color while the other colors stay the same.
+              backgroundColor:  const Color.fromARGB(255, 35, 35, 35),
+              // Here we take the value from the MyHomePage object that was created by
+              // the App.build method, and use it to set our appbar title.
+              leading:Image(image:AssetImage("assets/images/aac_logo.png")),
+              title: Text(widget.title,style:TextStyle(color:Colors.amber,fontSize:40)),
+              actions:<Widget>[
+                Text("Welcome, $user",style:TextStyle()),
+                FloatingActionButton(onPressed:()async{ final data=snapshot.data!.get('incomplete',defaultValue: {})!; snapshot.data!.put('incomplete', data);setState((){});}, child:Text("Logout",style:TextStyle(fontWeight:FontWeight.bold))),
+                FloatingActionButton(onPressed:()async{final data= Navigator.of(context).push(MaterialPageRoute(builder:  (context)=>Login(title:"hi") ));snapshot.data!.put('incomplete', data);setState((){});},tooltip:"login to view your simulations", child:Text("Login",style:TextStyle(fontWeight:FontWeight.bold))),
+                FloatingActionButton(onPressed:()async{final data= Navigator.of(context).push(MaterialPageRoute(builder:  (context)=>Login(title:"hi") ));snapshot.data!.put('incomplete', data);setState((){});},tooltip:"Make an account", child:Text("Signup",style:TextStyle(fontWeight:FontWeight.bold))),
+              ],
             ),
-            Container(decoration:BoxDecoration(image:DecorationImage(image:AssetImage("assets/images/background_main.png"))))
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+            body: Center(
+              child:Container(
+                width:double.infinity,
+                padding:EdgeInsets.only(left:120,right:120,top:80,bottom:50),
+                decoration:BoxDecoration(image:DecorationImage(fit:BoxFit.fill,image:AssetImage("assets/images/background_main.png"))),
+                child:SingleChildScrollView(
+                  child:Container(
+                    padding:EdgeInsets.all(20),
+
+                    decoration:BoxDecoration(color:Colors.black.withOpacity(0.65),borderRadius:BorderRadius.circular(10),border:BoxBorder.all(width:1,color:Colors.white)),
+                    child:Column(children: [
+                      AppBar(centerTitle:true,backgroundColor:Colors.white,title:Text("Your Simulations",style:TextStyle(color:Colors.amber,fontWeight:FontWeight.bold,fontSize:25)),actions: [
+                        //DropdownButton(icon:Icon(weight:5,color:Colors.black,size:35,Icons.sort),onChanged:(){},items:),
+                        IconButton(splashColor:Colors.green,tooltip:"Create New Simulation",icon:Icon(weight:5,color:Colors.black,size:35,Icons.add),onPressed:(){})
+                      ],),
+                      SizedBox(
+                        height:200,
+                        child: Material(
+                          color:Colors.transparent,
+                          child:  ListView.builder(
+                            padding:EdgeInsets.all(10),
+                      
+                            itemCount:keys.length,
+                            itemBuilder:(context, index) => ListTile(
+                              //leading:add a sim image,
+                              minTileHeight:30,
+                              //dense:true,
+                              tileColor:Colors.white,
+                              splashColor:Colors.green,
+                              selectedColor:Colors.red,
+                              title:Text(keys[index],style:TextStyle(color:Colors.black)),
+                              onTap:(){Navigator.of(context).push(MaterialPageRoute(builder:  (context)=>Sim_para(title:keys[index].toString(),coordinates:values[index])) );}
+                            ),
+                          ) ,
+                        )
+                        
+                      )
+                      
+                    ],)
+                  )
+                )
+              )       
+            ),
+          );
+        }
+        else{
+          return Column(children:<Widget>[
+            CircularProgressIndicator(strokeWidth:30,color:Colors.blue),
+            Text("Please wait while we fetch your Data",style:TextStyle(color:Colors.red))
+          ]);
+        }
+      }
     );
+    
   }
 }
