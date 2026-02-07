@@ -19,6 +19,6 @@ class Login extends StatefulWidget {
 class Loginstate extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(); 
+    return Scaffold(appBar:AppBar(leading:IconButton(icon:Icon(Icons.arrow_back),onPressed:(){Navigator.of(context).pop({'sim1':[],'sim2':[]});}))); 
   }
 }
