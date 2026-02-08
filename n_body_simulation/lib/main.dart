@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
+
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -61,6 +62,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  
   Future<void> func(BuildContext context){
     return showDialog(
       context:context,
@@ -70,13 +72,30 @@ class _MyHomePageState extends State<MyHomePage> {
           title:Text("LOGOUT?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
           content:Text("are you sure to logout ",style:TextStyle(color:Colors.black,fontSize:18)),
           actions:[
-            OutlinedButton(child:Text("confirm"),onPressed:(){user=" ";Navigator.of(context).pop();setState((){});}),
+            OutlinedButton(child:Text("confirm"),onPressed:(){setState((){user=" ";});Navigator.of(context).pop();}),
             OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();})
           ]
         );
       } 
     );
   }
+  
+  
+  WidgetBuilder func2<bool>(BuildContext context){
+    AlertDialog(
+      contentPadding:EdgeInsets.all(20),
+      title:Text("Delete?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
+      content:Text("are you sure to delete this simulation including its data ",style:TextStyle(color:Colors.black,fontSize:18)),
+      actions:[
+        OutlinedButton(child:Text("confirm"),onPressed:(){Navigator.of(context).pop(true);}),
+        OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop(false);})
+      ]
+    );
+    
+  }
+      
+    
+  
   String user = " ";
 
   late Future<Box> future;
@@ -137,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     fontSize:20
                   ),
                 ),
-                OutlinedButton(
+                if (user!=" ") OutlinedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(Colors.white),
                   ),
@@ -154,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ), //shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
                 SizedBox(width: 10),
-                FloatingActionButton(
+                if (user==" ") FloatingActionButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -166,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                     data=datas.values.toList()[0];
                     user=datas.keys.toList()[0];
-                    snapshot.data!.put('user_data', data);
+                    snapshot.data!.put('userdata', data);
                     setState(() {});
                   },
                   tooltip: "login to view your simulations",
@@ -176,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 SizedBox(width: 10),
-                FloatingActionButton(
+                if (user==" ") FloatingActionButton(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -288,10 +307,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   selectedColor: Colors.red,
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      data.remove(keys[index]);
-                                      setState(() {});
-                                      snapshot.data!.put('userdata', data);
+                                    onPressed: () async{
+                                      final del =await showDialog<int>(context: context,builder:func2(context));
+                                      if (del == true){
+                                        data.remove(keys[index]);
+                                        setState(() {});
+                                        snapshot.data!.put('userdata', data);
+                                      }
                                     },
                                   ),
                                   title: Text(
@@ -334,6 +356,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                       dataComputer.remove(keysc[index]);
                                       setState(() {});
                                       snapshot.data!.put('data_of_computer', dataComputer);
+                                      /*func2(context);
+                                      if (del == true){
+                                        dataComputer.remove(keysc[index]);
+                                        setState(() {});
+                                        snapshot.data!.put('data_of_computer', dataComputer);
+                                      }*/
                                     },
                                   ),
                                   title: Text(
@@ -385,4 +413,5 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
   }
+  
 }
