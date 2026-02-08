@@ -61,6 +61,22 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<void> func(BuildContext context){
+    return showDialog(
+      context:context,
+      builder:  (BuildContext context){
+        return AlertDialog(
+          contentPadding:EdgeInsets.all(20),
+          title:Text("LOGOUT?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
+          content:Text("are you sure to logout ",style:TextStyle(color:Colors.black,fontSize:18)),
+          actions:[
+            OutlinedButton(child:Text("confirm"),onPressed:(){user=" ";Navigator.of(context).pop();setState((){});}),
+            OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();})
+          ]
+        );
+      } 
+    );
+  }
   String user = " ";
 
   late Future<Box> future;
@@ -82,10 +98,17 @@ class _MyHomePageState extends State<MyHomePage> {
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, List<dynamic>> dataComputer = snapshot.data!.get(
+            'data_of_computer',
+            defaultValue: {'ssc': []},
+          );
           Map<String, List<dynamic>> data = snapshot.data!.get(
-            'incomplete',
+            'userdata',
             defaultValue: {'ss': []},
           );
+          //Map<String, List<dynamic>> data =dataComputer;// change this 
+          final keysc = dataComputer.keys.toList();
+          final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
           print(data);
@@ -102,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: Text(
                 widget.title,
                 style: TextStyle(
-                  color: Color.fromARGB(255, 24, 82, 130),
+                  color: Color.fromARGB(255, 39, 129, 202),
                   fontSize: 40,
                 ),
               ),
@@ -110,20 +133,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 Text(
                   "Welcome, $user",
                   style: TextStyle(
-                    color: const Color.fromARGB(255, 24, 82, 130),
+                    color:  Colors.white,
+                    fontSize:20
                   ),
                 ),
                 OutlinedButton(
                   style: ButtonStyle(
                     backgroundColor: WidgetStateProperty.all(Colors.white),
                   ),
-                  onPressed: () async {
-                    final data = snapshot.data!.get(
-                      'incomplete',
-                      defaultValue: {},
-                    )!;
-                    snapshot.data!.put('incomplete', data);
-                    setState(() {});
+                  onPressed: () {
+                    func(context);
+                    if (user==" "){snapshot.data!.put('userdata',{});}
                   },
                   child: Text(
                     "Logout",
@@ -139,12 +159,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius: BorderRadius.circular(7),
                   ),
                   onPressed: () async {
-                    final data = (await Navigator.of(context).push(
+                    final datas = (await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => Login(title: "hi"),
                       ),
                     ));
-                    snapshot.data!.put('incomplete', data);
+                    data=datas.values.toList()[0];
+                    user=datas.keys.toList()[0];
+                    snapshot.data!.put('user_data', data);
                     setState(() {});
                   },
                   tooltip: "login to view your simulations",
@@ -159,12 +181,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     borderRadius: BorderRadius.circular(7),
                   ),
                   onPressed: () async {
-                    final data = (await Navigator.of(context).push(
+                    final datas = (await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => Login(title: "hi"),
                       ),
                     ));
-                    snapshot.data!.put('incomplete', data);
+                    data=datas.values.toList()[0];
+                    user=datas.keys.toList()[0];
+                    snapshot.data!.put('userdata', data);
                     setState(() {});
                   },
                   tooltip: "Make an account",
@@ -246,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
-                        if (data.isNotEmpty)
+                        if (user!=" " && data.isNotEmpty)
                           SizedBox(
                             height: 200,
                             child: Material(
@@ -267,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onPressed: () {
                                       data.remove(keys[index]);
                                       setState(() {});
-                                      snapshot.data!.put('incomplete', data);
+                                      snapshot.data!.put('userdata', data);
                                     },
                                   ),
                                   title: Text(
@@ -280,6 +304,48 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Sim_para(
                                           title: keys[index].toString(),
                                           coordinates: values[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          )
+                        else if (user==" " && dataComputer.isNotEmpty)
+                          SizedBox(
+                            height: 200,
+                            child: Material(
+                              color: Colors.transparent,
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(10),
+
+                                itemCount: keysc.length,
+                                itemBuilder: (context, index) => ListTile(
+                                  //leading:add a sim image,
+                                  minTileHeight: 30,
+                                  //dense:true,
+                                  tileColor: Colors.white,
+                                  splashColor: Colors.green,
+                                  selectedColor: Colors.red,
+                                  trailing: IconButton(
+                                    icon: Icon(Icons.delete),
+                                    onPressed: () {
+                                      dataComputer.remove(keysc[index]);
+                                      setState(() {});
+                                      snapshot.data!.put('data_of_computer', dataComputer);
+                                    },
+                                  ),
+                                  title: Text(
+                                    keysc[index],
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => Sim_para(
+                                          title: keysc[index].toString(),
+                                          coordinates: valuesc[index],
                                         ),
                                       ),
                                     );
