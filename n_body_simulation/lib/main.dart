@@ -81,18 +81,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   
   
-  WidgetBuilder func2<bool>(BuildContext context){
-    AlertDialog(
+  Future func2(BuildContext context ,index, data){return showDialog<Map> (
+    context:context,
+    builder:(context){return AlertDialog(
       contentPadding:EdgeInsets.all(20),
       title:Text("Delete?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
       content:Text("are you sure to delete this simulation including its data ",style:TextStyle(color:Colors.black,fontSize:18)),
       actions:[
-        OutlinedButton(child:Text("confirm"),onPressed:(){Navigator.of(context).pop(true);}),
-        OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop(false);})
+        OutlinedButton(child:Text("confirm"),onPressed:(){data.remove(data.keys.toList()[index]);Navigator.of(context).pop(data);}),
+        OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop(data);})
       ]
-    );
+    );}
     
-  }
+  );}
       
     
   
@@ -162,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onPressed: () {
                     func(context);
-                    if (user==" "){snapshot.data!.put('userdata',{});}
+                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});}
                   },
                   child: Text(
                     "Logout",
@@ -280,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (context) => Sim_para(
-                                      title: "new sim",
+                                      title: "",
                                       coordinates: [],
                                     ),
                                   ),
@@ -289,7 +290,20 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
-                        if (user!=" " && data.isNotEmpty)
+                        if ((user!=" " && data=={'ss': []})||(user==" " && data=={'ssc': []}))
+                          SizedBox(
+                            child: Text(
+                              "You Have No Simulations",
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: const Color.fromARGB(255, 121, 121, 121),
+                              ),
+                            ),
+                          )
+                          //data={};
+
+                          //setState{(){}};
+                        else if (user!=" " && data.isNotEmpty)
                           SizedBox(
                             height: 200,
                             child: Material(
@@ -308,12 +322,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () async{
-                                      final del =await showDialog<int>(context: context,builder:func2(context));
-                                      if (del == true){
-                                        data.remove(keys[index]);
-                                        setState(() {});
-                                        snapshot.data!.put('userdata', data);
-                                      }
+                                      final datas =await func2(context, index,data);
+                                      data=datas;
+                                      setState((){});
+                                      snapshot.data!.put('userdata',data);
                                     },
                                   ),
                                   title: Text(
@@ -352,16 +364,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                   selectedColor: Colors.red,
                                   trailing: IconButton(
                                     icon: Icon(Icons.delete),
-                                    onPressed: () {
-                                      dataComputer.remove(keysc[index]);
-                                      setState(() {});
-                                      snapshot.data!.put('data_of_computer', dataComputer);
-                                      /*func2(context);
-                                      if (del == true){
-                                        dataComputer.remove(keysc[index]);
-                                        setState(() {});
-                                        snapshot.data!.put('data_of_computer', dataComputer);
-                                      }*/
+                                    onPressed: () async{
+                                      final datas =await func2(context, index,data);
+                                      data=datas;
+                                      setState((){});
+                                      snapshot.data!.put('data_of_computer',data);
                                     },
                                   ),
                                   title: Text(
