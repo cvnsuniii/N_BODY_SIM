@@ -85,39 +85,73 @@ class _MyHomePageState extends State<MyHomePage> {
     );}
     
   );}
-  Future funcAddSim(BuildContext context,data )async{
+  Future funcAddSim(BuildContext context,data,user )async{
     return showDialog(
       context:context,
       builder:(context){
-        int show=0;
+        int show=1;
         String texti='';
-        return AlertDialog(
-          title:Text("Add Title"),
-          actions:[
-            TextField(
-              style:TextStyle(color:Colors.black,fontSize:20),
-              onChanged:(text){
-                
-                if (text.isEmpty){
-                  show=1;
-                }
-                else if ( data.keys.toList().contains(text)){
-                  show==2;
-                }
-                else{
-                  texti=text;
-                  //setState((){});
-                }
-                setState((){});
-              }
-            ),
-            if (show!=0)Icon(Icons.error),
-            if(show==1) Text("the title cant be empty"),
-            if (show==2) Text("you have already used this title in your simulations"),
-            OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
-            if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim_para(title:texti,coordinates:[BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])],data:data);}));})
-          ]
+        return FutureBuilder(
+          future:future,
+          builder: (context,snapshot){
+            if (snapshot.connectionState == ConnectionState.done) {
+              return StatefulBuilder(
+                builder:(context, setStateDialog){
+                  //return FutureBuilder
+                  return AlertDialog(
+                    title:Text("Add Title"),
+                    actions:[
+                      TextField(
+                        style:TextStyle(color:Colors.black,fontSize:20),
+                        onChanged:(text){
+                          
+                          if (text.isEmpty){
+                            show=1;
+                          }
+                          else if ( data.keys.toList().contains(text)){
+                            show=2;
+                          }
+                          else{
+                            texti=text;
+                            show=0; 
+                            //setState((){});
+                          }
+                          setStateDialog((){});
+                        }
+                      ),
+                      if (show!=0)Icon(Icons.error),
+                      if(show==1) Text("the title cant be empty"),
+                      if (show==2) Text("you have already used this title in your simulations"),
+                      OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
+                      if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){
+                        data[texti]=[BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])];
+                        setStateDialog((){});
+                        setState((){});
+                        user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                          return Sim_para(user:user,title:texti,coordinates:data[texti],data:data);
+                        }));
+                      })
+                    ]
+                  );
+                } ,
+              );
+            }
+            else{
+              return Column(
+                children: <Widget>[
+                  CircularProgressIndicator(strokeWidth: 30, color: Colors.blue),
+                  Text(
+                    "Loading",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ],
+              );
+            }
+          },
         );
+        
+        
       }
     );
   }   
@@ -157,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
-          //print(data);
+          print(data);
           return Scaffold(
             appBar: AppBar(
               actionsPadding: EdgeInsets.only(right: 20, top: 5, bottom: 5),
@@ -301,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 size: 35,
                                 Icons.add,
                               ),
-                              onPressed: (){funcAddSim(context,data);}
+                              onPressed: ()async{await funcAddSim(context,data,user);setState((){});}
                             ),
                           ],
                         ),
@@ -347,17 +381,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                     keys[index],
                                     style: TextStyle(color: Colors.black),
                                   ),
-                                  onTap: () {
-                                    Navigator.of(context).push(
+                                  onTap: () async{
+                                    await Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => Sim_para(
-                                          title: keys[index].toString(),
-                                          coordinates: values[index],
-                                          data:data
-                                  
-                                        ),
+                                        builder: (context) {
+                                          return  Sim_para(
+                                            user:user,
+                                            title: keys[index].toString(),
+                                            coordinates: values[index],
+                                            data:data
+                                    
+                                          );
+                                          
+                                        }
                                       ),
                                     );
+                                    setState((){});
                                   },
                                 ),
                               ),
@@ -392,16 +431,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                     keys[index],
                                     style: TextStyle(color: Colors.black),
                                   ),
-                                  onTap: () {
-                                    Navigator.of(context).push(
+                                  onTap: () async{
+                                    await Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => Sim_para(
+                                          user:user,
                                           title: keys[index].toString(),
                                           coordinates: values[index],
                                           data:data
                                         ),
                                       ),
                                     );
+                                    setState((){});
                                   },
                                 ),
                               ),
