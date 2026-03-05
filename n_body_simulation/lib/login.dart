@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:n_body_simulation/main.dart';
+import 'bodyclass.dart';
+
 class Login extends StatefulWidget {
   const Login({super.key, required this.title});
 
@@ -19,6 +22,6 @@ class Login extends StatefulWidget {
 class Loginstate extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar:AppBar(leading:IconButton(icon:Icon(Icons.arrow_back),onPressed:(){Navigator.of(context).pop({'ggg':{'ss': []}});}))); 
+    return Scaffold(appBar:AppBar(leading:IconButton(icon:Icon(Icons.arrow_back),onPressed:(){Navigator.of(context).pop({'ggg':{'ss': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]}});}))); 
   }
 }

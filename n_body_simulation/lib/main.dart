@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
+//import 'package:build_runner/build_runner.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'login.dart';
 import 'sim_para.dart';
+import 'bodyclass.dart';
+/*part 'main.g.dart';
 
+@HiveType(typeId: 0)
+class BodyDetails extends HiveObject{
+  @HiveField(0)
+  String name;
+  @HiveField(1)
+  List<double> lastValue;
+  @HiveField(2)
+  List<double> lastVelocities;
+  @HiveField(3)
+  List<double> lastAcceleration;
+  BodyDetails(this.name,this.lastValue,this.lastVelocities,this.lastAcceleration);
+}*/
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+  Hive.registerAdapter(BodyDetailsAdapter());
   runApp(const MyApp());
 }
 
@@ -18,22 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Fuckkkkkkk',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(
+        colorScheme: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 35, 35, 35),
         ),
       ),
@@ -44,17 +46,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -94,7 +85,42 @@ class _MyHomePageState extends State<MyHomePage> {
     );}
     
   );}
-      
+  Future funcAddSim(BuildContext context,data )async{
+    return showDialog(
+      context:context,
+      builder:(context){
+        int show=0;
+        String texti='';
+        return AlertDialog(
+          title:Text("Add Title"),
+          actions:[
+            TextField(
+              style:TextStyle(color:Colors.black,fontSize:20),
+              onChanged:(text){
+                
+                if (text.isEmpty){
+                  show=1;
+                }
+                else if ( data.keys.toList().contains(text)){
+                  show==2;
+                }
+                else{
+                  texti=text;
+                  //setState((){});
+                }
+                setState((){});
+              }
+            ),
+            if (show!=0)Icon(Icons.error),
+            if(show==1) Text("the title cant be empty"),
+            if (show==2) Text("you have already used this title in your simulations"),
+            OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
+            if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim_para(title:texti,coordinates:[BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])],data:data);}));})
+          ]
+        );
+      }
+    );
+  }   
     
   
   String user = " ";
@@ -108,39 +134,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return FutureBuilder(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, List<dynamic>> dataComputer = snapshot.data!.get(
+          /*Map<String, List<dynamic>> dataComputer = snapshot.data!.get(
             'data_of_computer',
-            defaultValue: {'ssc': []},
+            defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]},
           );
-          Map<String, List<dynamic>> data = snapshot.data!.get(
+            //setState((){});
+          */
+          Map<String, List<dynamic>> data = user != " "? snapshot.data!.get(
             'userdata',
-            defaultValue: {'ss': []},
+            defaultValue: {'ss': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]},
+          ):snapshot.data!.get(
+            'data_of_computer',
+            defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]},
           );
+          
           //Map<String, List<dynamic>> data =dataComputer;// change this 
-          final keysc = dataComputer.keys.toList();
-          final valuesc = dataComputer.values.toList();
+          //final keysc = dataComputer.keys.toList();
+          //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
-          print(data);
+          //print(data);
           return Scaffold(
             appBar: AppBar(
               actionsPadding: EdgeInsets.only(right: 20, top: 5, bottom: 5),
-              // TRY THIS: Try changing the color here to a specific color (to
-              // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-              // change color while the other colors stay the same.
               backgroundColor: const Color.fromARGB(255, 35, 35, 35),
-              // Here we take the value from the MyHomePage object that was created by
-              // the App.build method, and use it to set our appbar title.
               leading: Image(image: AssetImage("assets/images/aac_logo.png")),
               title: Text(
                 widget.title,
@@ -163,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onPressed: () {
                     func(context);
-                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});}
+                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});data=snapshot.data!.get('data_of_computer',defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]});setState((){});}
                   },
                   child: Text(
                     "Logout",
@@ -175,6 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ), //shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
                 SizedBox(width: 10),
                 if (user==" ") FloatingActionButton(
+                  heroTag: null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -197,6 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(width: 10),
                 if (user==" ") FloatingActionButton(
+                  heroTag: null,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
@@ -208,6 +231,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                     data=datas.values.toList()[0];
                     user=datas.keys.toList()[0];
+                    
                     snapshot.data!.put('userdata', data);
                     setState(() {});
                   },
@@ -240,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: EdgeInsets.all(20),
 
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.65),
+                      color: Colors.black.withValues(alpha:0.65),
                       borderRadius: BorderRadius.circular(10),
                       border: BoxBorder.all(width: 1, color: Colors.white),
                     ),
@@ -257,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           centerTitle: true,
-                          backgroundColor: Colors.white.withOpacity(0.8),
+                          backgroundColor: Colors.white.withValues(alpha:0.8),
                           title: Text(
                             "Your Simulations",
                             style: TextStyle(
@@ -277,16 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 size: 35,
                                 Icons.add,
                               ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => Sim_para(
-                                      title: "",
-                                      coordinates: [],
-                                    ),
-                                  ),
-                                );
-                              },
+                              onPressed: (){funcAddSim(context,data);}
                             ),
                           ],
                         ),
@@ -338,6 +353,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         builder: (context) => Sim_para(
                                           title: keys[index].toString(),
                                           coordinates: values[index],
+                                          data:data
+                                  
                                         ),
                                       ),
                                     );
@@ -346,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           )
-                        else if (user==" " && dataComputer.isNotEmpty)
+                        else if (user==" " && data.isNotEmpty) //dataComputer
                           SizedBox(
                             height: 200,
                             child: Material(
@@ -354,7 +371,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: ListView.builder(
                                 padding: EdgeInsets.all(10),
 
-                                itemCount: keysc.length,
+                                itemCount: keys.length,
                                 itemBuilder: (context, index) => ListTile(
                                   //leading:add a sim image,
                                   minTileHeight: 30,
@@ -372,15 +389,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                   ),
                                   title: Text(
-                                    keysc[index],
+                                    keys[index],
                                     style: TextStyle(color: Colors.black),
                                   ),
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => Sim_para(
-                                          title: keysc[index].toString(),
-                                          coordinates: valuesc[index],
+                                          title: keys[index].toString(),
+                                          coordinates: values[index],
+                                          data:data
                                         ),
                                       ),
                                     );
