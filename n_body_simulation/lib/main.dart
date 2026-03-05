@@ -339,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
-                        if ((user!=" " && data=={'ss': []})||(user==" " && data=={'ssc': []}))
+                        if ((user!=" " && data=={'ss':  [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]})||(user==" " && data=={'ssc':  [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]}))
                           SizedBox(
                             child: Text(
                               "You Have No Simulations",
