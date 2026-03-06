@@ -16,10 +16,14 @@ class BodyDetails extends HiveObject {
   @HiveField(3)
   List<double> lastAcceleration;
 
+  @HiveField(4)
+  double radius;
+
   BodyDetails(
     this.name,
     this.lastValue,
     this.lastVelocities,
     this.lastAcceleration,
+    this.radius
   );
 }

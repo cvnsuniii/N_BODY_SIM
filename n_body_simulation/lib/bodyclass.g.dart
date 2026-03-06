@@ -21,13 +21,14 @@ class BodyDetailsAdapter extends TypeAdapter<BodyDetails> {
       (fields[1] as List).cast<double>(),
       (fields[2] as List).cast<double>(),
       (fields[3] as List).cast<double>(),
+      fields[4] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, BodyDetails obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class BodyDetailsAdapter extends TypeAdapter<BodyDetails> {
       ..writeByte(2)
       ..write(obj.lastVelocities)
       ..writeByte(3)
-      ..write(obj.lastAcceleration);
+      ..write(obj.lastAcceleration)
+      ..writeByte(4)
+      ..write(obj.radius);
   }
 
   @override

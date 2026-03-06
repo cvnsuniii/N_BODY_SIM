@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:three_js/three_js.dart' as three;
 class Sim extends StatefulWidget {
-  const Sim({super.key, required this.title});
+  const Sim({super.key, required this.title, required this.data});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -13,6 +13,7 @@ class Sim extends StatefulWidget {
   // always marked "final".
 
   final String title;
+  final Map data;
 
   @override
   State<Sim> createState() => Simstate();

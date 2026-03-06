@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (show==2) Text("you have already used this title in your simulations"),
                       OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
                       if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){
-                        data[texti]=[BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])];
+                        data[texti]=[BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)];
                         setStateDialog((){});
                         setState((){});
                         user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);
@@ -180,10 +180,10 @@ class _MyHomePageState extends State<MyHomePage> {
           */
           Map<String, List<dynamic>> data = user != " "? snapshot.data!.get(
             'userdata',
-            defaultValue: {'ss': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]},
+            defaultValue: {'ss': [BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)]},
           ):snapshot.data!.get(
             'data_of_computer',
-            defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]},
+            defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)]},
           );
           
           //Map<String, List<dynamic>> data =dataComputer;// change this 
@@ -218,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onPressed: () {
                     func(context);
-                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});data=snapshot.data!.get('data_of_computer',defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]});setState((){});}
+                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});data=snapshot.data!.get('data_of_computer',defaultValue: {'ssc': [BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)]});setState((){});}
                   },
                   child: Text(
                     "Logout",
@@ -339,7 +339,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
-                        if ((user!=" " && data=={'ss':  [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]})||(user==" " && data=={'ssc':  [BodyDetails('Body 1',[],[],[0,0,0]),BodyDetails('Body 2',[],[],[0,0,0])]}))
+                        if ((user!=" " && data=={'ss':  [BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)]})||(user==" " && data=={'ssc':  [BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)]}))
                           SizedBox(
                             child: Text(
                               "You Have No Simulations",
