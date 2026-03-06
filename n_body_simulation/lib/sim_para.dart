@@ -25,14 +25,57 @@ class Simparastate extends State<Sim_para> {
   late Future<Box> future;
   Widget bodyWidget(BuildContext context,int i,snapshot,user,simdata,simtitle){
     bool editbody=false;
-    bool pop=false;
+    //bool pop=false;
+    bool errorbody=true;
+    bool fuck=false;
+    bool enablepx=false;
+    bool errorpx=true;
+    bool enable_py=false;
+    bool error_py=true;
+    bool enable_pz=false;
+    bool error_pz=true;
     //if(pop==true){pop=false; Navigator.of(context).pop;};
     return StatefulBuilder(
       builder:(context,setStatebody){
-        return Column(
+        return Column(spacing:20,
           children:[
             Row(spacing:30,children: [
               if (!editbody) Text(simdata[simtitle][i].name,style:TextStyle(fontSize:20)),
+              if (editbody) Text("edit the body name here ",style:TextStyle(fontSize:20)),
+              if (editbody) SizedBox(width:200,child:TextField(
+                readOnly:!fuck,
+                onTap:(){
+                  fuck=true;
+                  setStatebody((){});
+                },
+                onChanged:(String text){
+                  bool check= true;
+                  for (int m=0; m<simdata[simtitle].length;m++){
+                    if (text==simdata[simtitle][m].name && m!=i ){
+                      check=false;
+                      break;
+                      //setStatebody((){});
+                    }
+                  }
+                  if (text.isNotEmpty&& check){
+                    errorbody=false;
+                    setStatebody((){});
+                  }
+
+                },
+                onSubmitted:(String text){
+                  if (!errorbody){
+                    editbody=!editbody;
+                    simdata[simtitle][i].name=text;
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    //print(simdata[simtitle][i].name);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (editbody && errorbody) Icon(Icons.info_outlined),
+              if (errorbody && editbody) Text("body name cant be duplicate or empty"),
               if (!editbody) IconButton(icon:Icon(Icons.edit),onPressed:(){
                 editbody=true;
                 setStatebody((){});
@@ -55,7 +98,7 @@ class Simparastate extends State<Sim_para> {
                   
                 }
                 else{
-                  if(pop==true){pop=false; Navigator.of(context).pop;};
+                  //if(pop==true){pop=false; Navigator.of(context).pop;};
                   showDialog(
                     context:context,
                     builder: (context){
@@ -84,6 +127,75 @@ class Simparastate extends State<Sim_para> {
                 
               }),
             ],),
+            Row(spacing:20,children: [
+              SizedBox(width:200,child:Text("Initial positions",style:TextStyle(fontSize:18))),
+              Text("x-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                readOnly:enablepx,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorpx=false;
+                  }
+                  else{
+                    errorpx=true;
+                  }
+                  setStatebody((){});
+                },
+                onTap:(){
+                  enablepx=true;
+                  setStatebody((){});
+                },
+                onSubmitted:(String text){
+                  if (!errorpx){
+                    simdata[simtitle][i].lastValue[0]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              ))
+            ],),
+            Row(spacing:20,children:[
+              SizedBox(width:200),
+              Text("y-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                
+              ))
+            ]),
+            Row(spacing:20,children:[
+              SizedBox(width:200),
+              Text("z-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                
+              ))
+            ]),
+            Row(spacing:20,children: [
+              SizedBox(width:200,child:Text("Radius of body",style:TextStyle(fontSize:18))),
+              
+            ],),
+            
+            Row(spacing:20,children: [
+              SizedBox(width:200,child:Text("Initial velocity",style:TextStyle(fontSize:18))),
+            ],),
+            Row(spacing:20,children:[
+              SizedBox(width:200),
+              Text("Vy-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                
+              ))
+            ]),
+            Row(spacing:20,children:[
+              SizedBox(width:200),
+              Text("Vz-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                
+              ))
+            ]),
+            Row(children: [
+              Text("please note that the initial accelerations are 0, which means no external forces.",style:TextStyle(fontSize:15))
+            ],),
+            SizedBox(height:40)
           ]
         );
       }
@@ -205,13 +317,14 @@ class Simparastate extends State<Sim_para> {
                                 setState((){});
                               },
                               onSubmitted:(String text){
-                                
+                                //print(valNoBody);
                                 if (valNoBody==0 ){
-                                  List simu=[];
+                                  List<BodyDetails> simu=[];
                                   for (int i=0; i<int.parse(text);i++){
                                     int m=i+1;
                                     simu.add(BodyDetails('Body $m',[],[],[0,0,0]));
                                   }
+                                  //print(simu);
                                   simdata[simtitle]=simu;
                                   widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                                 }
