@@ -35,15 +35,19 @@ class Simstate extends State<Sim> {
         leading:FloatingActionButton(tooltip:"go back to edit your dataset",onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
         title:Text(simtitle,style:TextStyle(fontSize:25)),
         actions:[
+          FloatingActionButton(backgroundColor:Colors.white,child: Icon(Icons.play_arrow,color:Colors.green),onPressed:(){}),
+          FloatingActionButton(backgroundColor:Colors.white,child: Icon(Icons.pause,color:Colors.green),onPressed:(){}),
+          Text("SimSpeed",style:TextStyle(fontSize:20)),
+          FloatingActionButton(backgroundColor:Colors.white,child: Icon(Icons.add,color:Colors.green),onPressed:(){}),
+          FloatingActionButton(backgroundColor:Colors.white,child: Icon(Icons.remove,color:Colors.green),onPressed:(){}),
           MenuAnchor(
             builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}});} ,
             menuChildren: [TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
-          )
+          ),
+
         ]
       ),
-      bottomNavigationBar:BottomAppBar(
-
-      )
+      
     ); 
   }
 }
