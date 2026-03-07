@@ -64,9 +64,97 @@ class Simparastate extends State<Sim_para> {
     bool errorvy=false;
     bool errorvx=false;
     bool errorr=false;
+    List<String> colopalNames = [
+      "amber",
+      "black",
+      "blue",
+      "Blue Accent",
+      "Blue grey",
+      "brown",
+      "cyan",
+      "Cyan accent",
+      "Deep Orange",
+      "Deep Orange Accent",
+      "deep Purple",
+      "Deep purple Accent",
+      "green",
+      "green Accent",
+      "Grey (default)",
+      "Indigo",
+      "Indigo Accent",
+      "Light Blue",
+      "Light Blue Accent",
+      "Light Green",
+      "Light Green Accent",
+      "Lime",
+      "Lime Accent",
+      "Orange",
+      "Orange Accent",
+      "Pink",
+      "Pink Accent",
+      "Purple",
+      "Purple Accent",
+      "red",
+      "Red Accent",
+      "teal",
+      "Teal Accent",
+      "White",
+      "Yellow",
+      "Yellow Accent",
+    ];
+    List<Color> colopal = [
+      Colors.amber,
+      Colors.black,
+      Colors.blue,
+      Colors.blueAccent,
+      Colors.blueGrey,
+      Colors.brown,
+      Colors.cyan,
+      Colors.cyanAccent,
+      Colors.deepOrange,
+      Colors.deepOrangeAccent,
+      Colors.deepPurple,
+      Colors.deepPurpleAccent,
+      Colors.green,
+      Colors.greenAccent,
+      Colors.grey,
+      Colors.indigo,
+      Colors.indigoAccent,
+      Colors.lightBlue,
+      Colors.lightBlueAccent,
+      Colors.lightGreen,
+      Colors.lightGreenAccent,
+      Colors.lime,
+      Colors.limeAccent,
+      Colors.orange,
+      Colors.orangeAccent,
+      Colors.pink,
+      Colors.pinkAccent,
+      Colors.purple,
+      Colors.purpleAccent,
+      Colors.red,
+      Colors.redAccent,
+      Colors.teal,
+      Colors.tealAccent,
+      Colors.white,
+      Colors.yellow,
+      Colors.yellowAccent,
+    ];
+    //MenuController controller=MenuController(:);
     //if(pop==true){pop=false; Navigator.of(context).pop;};
+    String nowcolor(){
+      for  (int k=0; k<colopal.length; ){
+        if (simdata[simtitle][i].color==colopal[k]){
+          return colopalNames[k];
+        }
+        
+      }
+      return " ";
+    }
+    
     return StatefulBuilder(
-      builder:(context,setStatebody){
+      builder:(context,
+      setStatebody){
         return Column(spacing:20,
           children:[
             Row(spacing:30,children: [
@@ -256,6 +344,18 @@ class Simparastate extends State<Sim_para> {
               if (errorpz) Icon(Icons.error,color:Colors.red),
               if (errorpz) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ]),
+            Row(spacing:20,children:[
+              SizedBox(width: 200,child:Text("Color of Body",style:TextStyle(fontSize:18))),
+              //Text(nowcolor(),style:TextStyle(fontSize:18)),
+              //Text(nowcolor(),style:TextStyle(fontSize:18)),
+              MenuAnchor(
+                builder:(BuildContext context, MenuController controller, Widget? child) {return TextButton(onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}},child: Text("Color Menu",style:TextStyle(fontSize: 18)),);},
+                
+                menuChildren:[
+                  for (int m=0; m<colopal.length; m++) ListTile(onTap:(){simdata[simtitle][i].color=colopal[m].toARGB32();user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setStatebody((){});setState((){});},leading:Container(width:18,height:18 ,decoration:BoxDecoration(color:colopal[m],border:BoxBorder.all(width:2,color:Colors.black))),title:Text(colopalNames[m],style:TextStyle(fontSize:18)))
+                ]
+              )
+            ]),
             Row(spacing:20,children: [
               SizedBox(width:200,child:Text("Radius of body",style:TextStyle(fontSize:18))),
               Text("R-",style:TextStyle(fontSize:18)),
@@ -419,7 +519,7 @@ class Simparastate extends State<Sim_para> {
           print(simdata);
           return Scaffold(
             appBar:AppBar(
-              leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop();})),
+              leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop();}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
               actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:(){Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata);}));},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
@@ -517,7 +617,7 @@ class Simparastate extends State<Sim_para> {
                                   List<BodyDetails> simu=[];
                                   for (int i=0; i<int.parse(text);i++){
                                     int m=i+1;
-                                    simu.add(BodyDetails('Body $m',[0,0,0],[0,0,0],[0,0,0],0));
+                                    simu.add(BodyDetails('Body $m',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()));
                                   }
                                   //print(simu);
                                   simdata[simtitle]=simu;
@@ -525,7 +625,7 @@ class Simparastate extends State<Sim_para> {
                                 }
                                 else {
                                   //return showDialog();
-                                  simdata[simtitle]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0)];
+                                  simdata[simtitle]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())];
                                   widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                                 }
                                 setState((){});
@@ -572,10 +672,11 @@ class Simparastate extends State<Sim_para> {
                               );
                             },);}
                           },child:Text("Simulate",style:TextStyle(color: Colors.white)))),
-                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle].add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
+                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle].add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
                           MenuAnchor(
                             menuChildren:[TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
-                            builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){controller.open();});}
+                            
+                            builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}});}
                           )
                         ])
                       ],)

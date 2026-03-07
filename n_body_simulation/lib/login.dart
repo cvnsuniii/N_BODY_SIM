@@ -22,6 +22,6 @@ class Login extends StatefulWidget {
 class Loginstate extends State<Login> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar:AppBar(leading:IconButton(icon:Icon(Icons.arrow_back),onPressed:(){Navigator.of(context).pop({'ggg':{'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0)]}});}))); 
+    return Scaffold(appBar:AppBar(leading:IconButton(icon:Icon(Icons.arrow_back),onPressed:(){Navigator.of(context).pop({'ggg':{'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]}});}))); 
   }
 }

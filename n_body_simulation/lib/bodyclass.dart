@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-
+import 'package:flutter/material.dart';
 part 'bodyclass.g.dart';
 
 @HiveType(typeId: 0)
@@ -19,11 +19,15 @@ class BodyDetails extends HiveObject {
   @HiveField(4)
   double radius;
 
+  @HiveField(5)
+  int color;
+
   BodyDetails(
     this.name,
     this.lastValue,
     this.lastVelocities,
     this.lastAcceleration,
-    this.radius
+    this.radius,
+    this.color
   );
 }

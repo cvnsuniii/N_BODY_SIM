@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:three_js/three_js.dart' as three;
 class Sim extends StatefulWidget {
   const Sim({super.key, required this.title, required this.data});
@@ -19,9 +20,19 @@ class Sim extends StatefulWidget {
   State<Sim> createState() => Simstate();
 }
 class Simstate extends State<Sim> {
-  
+  late Future<Box> future;
+  @override
+  void initState() {
+    super.initState();
+    future = Hive.openBox('data');
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(); 
+    return Scaffold(
+      appBar:AppBar(
+        leading:FloatingActionButton(onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
+        //title:Text()
+      ),
+    ); 
   }
 }
