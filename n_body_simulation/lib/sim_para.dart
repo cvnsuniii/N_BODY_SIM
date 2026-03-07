@@ -26,7 +26,22 @@ class Simparastate extends State<Sim_para> {
   late Future<Box> future;
   bool checked=false;
   List<List> distances=[];
-  
+  bool chkdist(){
+    bool checkdist=true;
+    for (int k=0; k<simdata[simtitle].length;k++){
+      List dist=[];
+      for (int m=0; m<simdata[simtitle].length;m++){
+        num disst=pow((pow((simdata[simtitle][m].lastValue[0]-simdata[simtitle][k].lastValue[0]),2)+pow((simdata[simtitle][m].lastValue[1]-simdata[simtitle][k].lastValue[1]),2)+pow((simdata[simtitle][m].lastValue[2]-simdata[simtitle][k].lastValue[2]),2)),0.5);
+        //print(disst);
+        if (simdata[simtitle][m].radius+simdata[simtitle][k].radius>disst&& disst!=0){
+          checkdist=false;
+        }
+        dist.add(disst);
+      }
+      distances.add(dist);
+    }
+    return checkdist;
+  }
   //bool fuck=false;
   Widget bodyWidget(BuildContext context,int i,snapshot,user,simdata,simtitle){
     bool editbody=false;
@@ -528,21 +543,35 @@ class Simparastate extends State<Sim_para> {
                         for(int i=0; i<(simdata[simtitle].length); i++) bodyWidget(context,i,snapshot,widget.user,simdata,simtitle),
                         Row(spacing:30,children:[
                           SizedBox(width:200,height:40,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.green,child:Text("check & Save",style:TextStyle(color: Colors.white)),onPressed:(){
-                            bool checkdist=true;
-                            for (int k=0; k<simdata[simtitle].length;k++){
-                              List dist=[];
-                              for (int m=0; m<simdata[simtitle].length;m++){
-                                num disst=pow((pow((simdata[simtitle][m].lastValue[0]-simdata[simtitle][k].lastValue[0]),2)+pow((simdata[simtitle][m].lastValue[1]-simdata[simtitle][k].lastValue[1]),2)+pow((simdata[simtitle][m].lastValue[2]-simdata[simtitle][k].lastValue[2]),2)),0.5);
-                                if (simdata[simtitle][m].radius+simdata[simtitle][k].radius>disst){
-                                  checkdist=false;
-                                }
-                                dist.add(disst);
-                              }
-                              distances.add(dist);
+                            bool checkdist= chkdist();
+                            
+                            if (checkdist&& !titledit){
+                              checked=true;
+                              setState((){});
                             }
-                            //if (checkdist&& !titledit)
+                            else{
+                              
+                              checked=false;
+                              setState((){});
+                              showDialog(context:context,builder:(BuildContext context) {
+                                return AlertDialog(
+                                  title:Text("Warning",style:TextStyle(fontSize:25)),
+                                  content:Text("please check your values again. 2 bodies cannot be sticking together or inside one another before simulation starts",style:TextStyle(fontSize:18)),
+                                  actions:[OutlinedButton(onPressed: (){Navigator.of(context).pop();},child:Text("Ok",style:TextStyle(fontSize:18)))]
+                                );
+                              },);
+                            }
                           })),
-                          if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata);}));},child:Text("Simulate",style:TextStyle(color: Colors.white)))),
+                          if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){
+                            if(chkdist()) {Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata);}));} 
+                            else {showDialog(context:context,builder:(BuildContext context) {
+                              return AlertDialog(
+                                title:Text("Warning",style:TextStyle(fontSize:25)),
+                                content:Text("please check your values again. 2 bodies cannot be sticking together or inside one another before simulation starts",style:TextStyle(fontSize:18)),
+                                actions:[OutlinedButton(onPressed: (){Navigator.of(context).pop();},child:Text("Ok",style:TextStyle(fontSize:18)))]
+                              );
+                            },);}
+                          },child:Text("Simulate",style:TextStyle(color: Colors.white)))),
                           FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle].add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
                           MenuAnchor(
                             menuChildren:[TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
