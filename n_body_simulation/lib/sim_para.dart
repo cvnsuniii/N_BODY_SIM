@@ -26,18 +26,29 @@ class Simparastate extends State<Sim_para> {
   late Future<Box> future;
   bool checked=false;
   List<List> distances=[];
+  
+  //bool fuck=false;
   Widget bodyWidget(BuildContext context,int i,snapshot,user,simdata,simtitle){
     bool editbody=false;
     //bool pop=false;
-    bool errorbody=true;
-    bool fuck=false;
-    bool enablepx=false;
-    bool errorpx=true;
-    bool enable_py=false;
-    bool error_py=true;
-    bool enable_pz=false;
-    bool error_pz=true;
     
+    //bool fuck=false;
+    
+    bool errorpx=false;
+    bool errorbody=true;
+    bool errorpy=false;
+    TextEditingController controllerpx = TextEditingController(text: simdata[simtitle][i].lastValue[0].toString());
+    TextEditingController controllerpy = TextEditingController(text: simdata[simtitle][i].lastValue[1].toString());
+    TextEditingController controllerpz = TextEditingController(text: simdata[simtitle][i].lastValue[2].toString());
+    TextEditingController controllervx = TextEditingController(text: simdata[simtitle][i].lastVelocities[0].toString());
+    TextEditingController controllervy = TextEditingController(text: simdata[simtitle][i].lastVelocities[1].toString());
+    TextEditingController controllervz = TextEditingController(text: simdata[simtitle][i].lastVelocities[2].toString());
+    TextEditingController controllerr = TextEditingController(text: simdata[simtitle][i].radius.toString());
+    bool errorpz=false;
+    bool errorvz=false;
+    bool errorvy=false;
+    bool errorvx=false;
+    bool errorr=false;
     //if(pop==true){pop=false; Navigator.of(context).pop;};
     return StatefulBuilder(
       builder:(context,setStatebody){
@@ -47,25 +58,27 @@ class Simparastate extends State<Sim_para> {
               if (!editbody) Text(simdata[simtitle][i].name,style:TextStyle(fontSize:20)),
               if (editbody) Text("edit the body name here ",style:TextStyle(fontSize:20)),
               if (editbody) SizedBox(width:200,child:TextField(
-                readOnly:!fuck,
-                onTap:(){
-                  fuck=true;
-                  setStatebody((){});
-                },
+                
                 onChanged:(String text){
                   bool check= true;
                   for (int m=0; m<simdata[simtitle].length;m++){
+                    //print(text==simdata[simtitle][m].name);
                     if (text==simdata[simtitle][m].name && m!=i ){
                       check=false;
                       break;
                       //setStatebody((){});
                     }
                   }
+                  //print(check);
                   if (text.isNotEmpty&& check){
                     errorbody=false;
                     setStatebody((){});
                   }
-
+                  else{
+                    errorbody=true;
+                    setStatebody((){});
+                  }
+                  //print(errorbody);
                 },
                 onSubmitted:(String text){
                   if (!errorbody){
@@ -134,8 +147,12 @@ class Simparastate extends State<Sim_para> {
             Row(spacing:20,children: [
               SizedBox(width:200,child:Text("Initial positions",style:TextStyle(fontSize:18))),
               Text("x-",style:TextStyle(fontSize:18)),
+
               SizedBox(width:200,child:TextField(
-                readOnly:enablepx,
+                //readOnly:enablepx,
+                
+                decoration:InputDecoration(),
+                controller:controllerpx,
                 onChanged:(String text){
                   int? n=int.tryParse(text);
                   if (n!=null){
@@ -146,55 +163,214 @@ class Simparastate extends State<Sim_para> {
                   }
                   setStatebody((){});
                 },
-                onTap:(){
-                  enablepx=true;
-                  setStatebody((){});
-                },
+                
                 onSubmitted:(String text){
                   if (!errorpx){
+                    //print(simdata[simtitle][i].lastValue);
                     simdata[simtitle][i].lastValue[0]=int.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
                   }
                 }
-              ))
+              )),
+              if (errorpx) Icon(Icons.error,color:Colors.red),
+              if (errorpx) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ],),
             Row(spacing:20,children:[
               SizedBox(width:200),
               Text("y-",style:TextStyle(fontSize:18)),
               SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
                 
-              ))
+                decoration:InputDecoration(),
+                controller:controllerpy,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorpy=false;
+                  }
+                  else{
+                    errorpy=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorpy){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].lastValue[1]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorpy) Icon(Icons.error,color:Colors.red),
+              if (errorpy) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ]),
             Row(spacing:20,children:[
               SizedBox(width:200),
               Text("z-",style:TextStyle(fontSize:18)),
               SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
                 
-              ))
+                decoration:InputDecoration(),
+                controller:controllerpz,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorpz=false;
+                  }
+                  else{
+                    errorpz=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorpz){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].lastValue[2]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorpz) Icon(Icons.error,color:Colors.red),
+              if (errorpz) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ]),
             Row(spacing:20,children: [
               SizedBox(width:200,child:Text("Radius of body",style:TextStyle(fontSize:18))),
-              
+              Text("R-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
+                
+                decoration:InputDecoration(),
+                controller:controllerr,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null && n>=0){
+                    errorr=false;
+                  }
+                  else{
+                    errorr=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorr){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].radius=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorr) Icon(Icons.error,color:Colors.red),
+              if (errorr) Text("only positive(or 0) numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ],),
             
-            Row(spacing:20,children: [
+            
+            Row(spacing:20,children:[
               SizedBox(width:200,child:Text("Initial velocity",style:TextStyle(fontSize:18))),
+              //SizedBox(width:200),
+              Text("Vx-",style:TextStyle(fontSize:18)),
+              SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
+                
+                decoration:InputDecoration(),
+                controller:controllervx,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorvx=false;
+                  }
+                  else{
+                    errorvx=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorvx){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].lastVelocities[0]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorvx) Icon(Icons.error,color:Colors.red),
+              if (errorvx) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ],),
             Row(spacing:20,children:[
               SizedBox(width:200),
               Text("Vy-",style:TextStyle(fontSize:18)),
               SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
                 
-              ))
+                decoration:InputDecoration(),
+                controller:controllervy,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorvy=false;
+                  }
+                  else{
+                    errorvy=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorvy){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].lastVelocities[1]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorvy) Icon(Icons.error,color:Colors.red),
+              if (errorvy) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ]),
             Row(spacing:20,children:[
               SizedBox(width:200),
               Text("Vz-",style:TextStyle(fontSize:18)),
               SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
                 
-              ))
+                decoration:InputDecoration(),
+                controller:controllervz,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null){
+                    errorvz=false;
+                  }
+                  else{
+                    errorvz=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorvz){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].lastVelocities[2]=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorvz) Icon(Icons.error,color:Colors.red),
+              if (errorvz) Text("only real numbers can be used and not empty",style:TextStyle(fontSize:15)),
             ]),
             Row(children: [
               Text("please note that the initial accelerations are 0, which means no external forces.",style:TextStyle(fontSize:15))
@@ -326,7 +502,7 @@ class Simparastate extends State<Sim_para> {
                                   List<BodyDetails> simu=[];
                                   for (int i=0; i<int.parse(text);i++){
                                     int m=i+1;
-                                    simu.add(BodyDetails('Body $m',[],[],[0,0,0],0));
+                                    simu.add(BodyDetails('Body $m',[0,0,0],[0,0,0],[0,0,0],0));
                                   }
                                   //print(simu);
                                   simdata[simtitle]=simu;
@@ -334,7 +510,7 @@ class Simparastate extends State<Sim_para> {
                                 }
                                 else {
                                   //return showDialog();
-                                  simdata[simtitle]=[BodyDetails('Body 1',[],[],[0,0,0],0),BodyDetails('Body 2',[],[],[0,0,0],0)];
+                                  simdata[simtitle]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0)];
                                   widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                                 }
                                 setState((){});
@@ -344,10 +520,11 @@ class Simparastate extends State<Sim_para> {
                           SizedBox(width: 100,),
                           if (valNoBody==1||valNoBody==2) Icon(Icons.dangerous,color:Colors.red),
                           if (valNoBody==1) Text("invalid number type.please enter a integer",style:TextStyle(color:Colors.black,fontSize:14)),
-                          if(valNoBody==2) Text("Input cant be negative or less than 2",style:TextStyle(color:Colors.black,fontSize:14)),
+                          if(valNoBody==2) Text("Input cant be negative and less than 2",style:TextStyle(color:Colors.black,fontSize:14)),
                         ],),
                         Row(spacing:20,children:[Icon(Icons.info_outlined,size:15),Text("Press Enter to validate the number of bodies.note that using this feature discards all previous bodies and creates a new list of bodies with this number")]),
                         SizedBox(height:30),
+                        Row(spacing:30,children: [Icon(Icons.info_outlined,size:20),Text("please press enter to make changes in every text field.")],),
                         for(int i=0; i<(simdata[simtitle].length); i++) bodyWidget(context,i,snapshot,widget.user,simdata,simtitle),
                         Row(spacing:30,children:[
                           SizedBox(width:200,height:40,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.green,child:Text("check & Save",style:TextStyle(color: Colors.white)),onPressed:(){
@@ -366,7 +543,7 @@ class Simparastate extends State<Sim_para> {
                             //if (checkdist&& !titledit)
                           })),
                           if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata);}));},child:Text("Simulate",style:TextStyle(color: Colors.white)))),
-                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle].add(BodyDetails("Body $n",[],[],[0,0,0],0));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
+                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle].add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
                           MenuAnchor(
                             menuChildren:[TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
                             builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){controller.open();});}
