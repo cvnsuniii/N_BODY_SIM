@@ -20,19 +20,30 @@ class Sim extends StatefulWidget {
   State<Sim> createState() => Simstate();
 }
 class Simstate extends State<Sim> {
+  late String simtitle;
   late Future<Box> future;
   @override
   void initState() {
     super.initState();
+    simtitle=widget.title;
     future = Hive.openBox('data');
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:AppBar(
-        leading:FloatingActionButton(onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
-        //title:Text()
+        leading:FloatingActionButton(tooltip:"go back to edit your dataset",onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
+        title:Text(simtitle,style:TextStyle(fontSize:25)),
+        actions:[
+          MenuAnchor(
+            builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}});} ,
+            menuChildren: [TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
+          )
+        ]
       ),
+      bottomNavigationBar:BottomAppBar(
+
+      )
     ); 
   }
 }

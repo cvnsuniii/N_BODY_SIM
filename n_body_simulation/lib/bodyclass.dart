@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 part 'bodyclass.g.dart';
 
 @HiveType(typeId: 0)
