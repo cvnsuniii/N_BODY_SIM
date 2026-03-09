@@ -19,6 +19,8 @@ class BodyDetails extends HiveObject{
   List<double> lastAcceleration;
   BodyDetails(this.name,this.lastValue,this.lastVelocities,this.lastAcceleration);
 }*/
+Map<String, List<dynamic>> one={'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]};
+Map<String, List<dynamic>> two={'ssc': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]};
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -178,13 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
           );
             //setState((){});
           */
-          Map<String, List<dynamic>> data = user != " "? snapshot.data!.get(
-            'userdata',
-            defaultValue: {'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]},
-          ):snapshot.data!.get(
-            'data_of_computer',
-            defaultValue: {'ssc': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]},
-          );
+          Map<String, List<dynamic>> data =(user != " "? snapshot.data!.get('userdata', defaultValue: one): snapshot.data!.get('data_of_computer', defaultValue: two)).cast<String, List<dynamic>>();
           
           //Map<String, List<dynamic>> data =dataComputer;// change this 
           //final keysc = dataComputer.keys.toList();
@@ -218,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onPressed: () {
                     func(context);
-                    if (user==" "){snapshot.data!.put('userdata',{'ssc':[]});data=snapshot.data!.get('data_of_computer',defaultValue: {'ssc': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]});setState((){});}
+                    if (user==" "){snapshot.data!.put('userdata',one);data=snapshot.data!.get('data_of_computer',defaultValue: two);setState((){});}
                   },
                   child: Text(
                     "Logout",
@@ -339,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ],
                         ),
-                        if ((user!=" " && data=={'ss':  [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]})||(user==" " && data=={'ssc':  [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]}))
+                        /*if ((user!=" " && data==one)||(user==" " && data==two))
                           SizedBox(
                             child: Text(
                               "You Have No Simulations",
@@ -351,8 +347,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           )
                           //data={};
 
-                          //setState{(){}};
-                        else if (user!=" " && data.isNotEmpty)
+                          //setState{(){}};*/
+                        if (user!=" " && data.isNotEmpty)
                           SizedBox(
                             height: 200,
                             child: Material(

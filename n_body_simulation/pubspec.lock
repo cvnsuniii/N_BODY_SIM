@@ -757,6 +757,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  three_js_helpers:
+    dependency: transitive
+    description:
+      name: three_js_helpers
+      sha256: de3903fe135e3eb536c2619f84aecbfe52049497b8cef3c660741404b20b833a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.3"
   three_js_math:
     dependency: transitive
     description:
@@ -765,6 +773,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.6"
+  three_js_objects:
+    dependency: "direct main"
+    description:
+      name: three_js_objects
+      sha256: "63ef4ac46e66b1ae9749f360a70a072c57c5775e2c0359a85fede60ea2127023"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   three_js_sensors:
     dependency: transitive
     description:
