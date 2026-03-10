@@ -182,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
           */
           Map<String, List<dynamic>> data =(user != " "? snapshot.data!.get('userdata', defaultValue: one): snapshot.data!.get('data_of_computer', defaultValue: two)).cast<String, List<dynamic>>();
           
-          //Map<String, List<dynamic>> data =dataComputer;// change this 
+          //Map<String, List<dynamic>> data =dataComputer;// change this x
           //final keysc = dataComputer.keys.toList();
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
