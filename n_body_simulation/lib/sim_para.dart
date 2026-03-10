@@ -513,15 +513,40 @@ class Simparastate extends State<Sim_para> {
     }); 
   }
   Widget simspeed(){
-    void fuck(int a){
-
-    }
+    double sp1=1;
+    int run=1;
     return StatefulBuilder(builder: (context, setStatespeed) {
+      void fuck(int a){
+        if (a==1&& run==30){}
+        else if (a==1){
+          if (run%3==1){
+            sp1*=2.5;
+          }
+          else{
+            sp1*=2;
+          }
+          run++;
+          setStatespeed((){});
+        }
+        else if (run==1&& a==-1) {}
+
+        else{
+          if (run%3==0){
+            sp1/=2.5;
+          }
+          else{
+            sp1/=2;
+          }
+          run--;
+          setStatespeed((){});
+        }
+      }
       return Row(spacing:30,children: [
         IconButton(icon:Icon(Icons.add),onPressed:(){fuck(1);}),
-        Text(),
+        Text(sp1.toString(),style:TextStyle(fontSize:18)),
         IconButton(icon:Icon(Icons.remove),onPressed:(){fuck(-1);})
       ],);
+
     },);
   }
 
