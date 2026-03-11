@@ -26,6 +26,8 @@ class Simparastate extends State<Sim_para> {
   late Future<Box> future;
   bool checked=false;
   List<List> distances=[];
+  double timestep=200;
+  List<double> frame=[10,20,50,75,100,150,200,250,400,500,750,1000,1500,2000];
   bool chkdist(){
     bool checkdist=true;
     for (int k=0; k<simdata[simtitle]!.length;k++){
@@ -349,7 +351,7 @@ class Simparastate extends State<Sim_para> {
               //Text(nowcolor(),style:TextStyle(fontSize:18)),
               //Text(nowcolor(),style:TextStyle(fontSize:18)),
               MenuAnchor(
-                builder:(BuildContext context, MenuController controller, Widget? child) {return TextButton(onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}},child: Text(nowcolor(),style:TextStyle(fontSize: 18)),);},
+                builder:(BuildContext context, MenuController controller, Widget? child) {return TextButton(onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}},child: Text("",style:TextStyle(fontSize: 18)),);},// fucking check the fucking error here 
                 
                 menuChildren:[
                   for (int m=0; m<colopal.length; m++) ListTile(onTap:(){simdata[simtitle][i].color=colopal[m].toARGB32();user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setStatebody((){});setState((){});},leading:Container(width:18,height:18 ,decoration:BoxDecoration(color:colopal[m],border:BoxBorder.all(width:2,color:Colors.black))),title:Text(colopalNames[m],style:TextStyle(fontSize:18)))
@@ -497,58 +499,96 @@ class Simparastate extends State<Sim_para> {
     );
     
   }
-  Widget simtimestep(){
-    double timestep=200;
-    List<double> frame=[10,20,50,75,100,150,200,250,400,500,750,1000,1500,2000];
-    return StatefulBuilder(builder:(context,setStatestep){
-      return Row(spacing:50,children:[
-        Tooltip(message:"advised to choose according to your computer capabilities",child:Text("frame time/ timestep(ms)")),
-        MenuAnchor(
-          builder:(BuildContext context,MenuController controller,Widget? child) {
-            return TextButton(onPressed: (){if(controller.isOpen){controller.close();} else{controller.open();}},child:Text("$timestep ms",style:TextStyle(fontSize:18)));
-          },
-          menuChildren: [for(int k=0; k<frame.length; k++) ListTile(selectedColor:Colors.lime,focusColor:Colors.grey,onTap:(){timestep=frame[k];setStatestep((){});},title:Text(frame[k].toString(),style:TextStyle(fontSize:18)))],
-        ),
-      ]);
-    }); 
-  }
-  Widget simspeed(){
-    double sp1=1;
-    int run=1;
-    return StatefulBuilder(builder: (context, setStatespeed) {
-      void fuck(int a){
-        if (a==1&& run==30){}
-        else if (a==1){
-          if (run%3==1){
-            sp1*=2.5;
-          }
-          else{
-            sp1*=2;
-          }
-          run++;
-          setStatespeed((){});
-        }
-        else if (run==1&& a==-1) {}
-
-        else{
-          if (run%3==0){
-            sp1/=2.5;
-          }
-          else{
-            sp1/=2;
-          }
-          run--;
-          setStatespeed((){});
-        }
+  double sp1=1;
+  int run=1;
+  void fuck(int a){
+    if (a==1&& run==30){}
+    else if (a==1){
+      if (run%3==1){
+        sp1*=2.5;
       }
-      return Row(spacing:30,children: [
-        IconButton(icon:Icon(Icons.add),onPressed:(){fuck(1);}),
-        Text(sp1.toString(),style:TextStyle(fontSize:18)),
-        IconButton(icon:Icon(Icons.remove),onPressed:(){fuck(-1);})
-      ],);
+      else{
+        sp1*=2;
+      }
+      run++;
+      setState((){});
+    }
+    else if (run==1&& a==-1) {}
 
-    },);
+    else{
+      if (run%3==2){
+        sp1/=2.5;
+      }
+      else{
+        sp1/=2;
+      }
+      run--;
+      setState((){});
+    }
   }
+  
+  Widget simspeed(context){
+    
+    
+  
+    return Row(spacing:30,children: [
+      Text("Simulation speed",style:TextStyle(fontSize:18)),
+      IconButton(icon:Icon(Icons.add),onPressed:(){fuck(1);}),
+      Text(sp1.toString(),style:TextStyle(fontSize:18)),
+      IconButton(icon:Icon(Icons.remove),onPressed:(){fuck(-1);})
+    ],);
+
+    
+  }
+  int simtimes=10;
+  
+  Widget simtime(BuildContext context){
+    TextEditingController controllersimtime=TextEditingController(text: simtimes.toString());
+    bool errorsimtime=false;
+    return StatefulBuilder(builder: (context, setStatesimtime) {
+      return Row(
+        spacing:10,children:[
+          
+          SizedBox(
+            width:200,
+            child:  TextField(
+              maxLength:3,
+              controller:controllersimtime,
+              onChanged:(String text){
+                int? n=int.tryParse(text);
+                if (n!=null){
+                  if (n<=0|| (n<timestep/1000)){
+                    
+                    errorsimtime=true;
+                  }
+                  else{
+                    errorsimtime=false;
+                    
+                  }
+                }
+                else{
+                  errorsimtime=true;
+                }
+                setStatesimtime((){});
+              },
+              onSubmitted:(String text){
+                if (!errorsimtime){
+                  simtimes=int.parse(text);
+                  setState((){});
+                }
+              
+              }
+            )
+          ),
+          if(errorsimtime) Icon(Icons.error,color:Colors.red),
+          if(errorsimtime) Text("time cannot be this datatype/ negative/empty/less than timestep"),
+        ]
+      );
+      
+      
+    });
+  }
+
 
 
   @override
@@ -577,7 +617,7 @@ class Simparastate extends State<Sim_para> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop();}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -697,11 +737,23 @@ class Simparastate extends State<Sim_para> {
                         SizedBox(height:30),
                         Row(spacing:30,children: [Icon(Icons.info_outlined,size:20),Text("please press enter to make changes in every text field.")],),
                         for(int i=0; i<(simdata[simtitle]!.length); i++) bodyWidget(context,i,snapshot,widget.user,simdata,simtitle),
+                        Row(spacing:50,children:[
+                          Tooltip(message:"advised to choose according to your computer capabilities",child:Text("Frame time/ timestep(ms)",style:TextStyle(fontSize:18))),
+                          MenuAnchor(
+                            builder:(BuildContext context,MenuController controller,Widget? child) {
+                              return TextButton(onPressed: (){if(controller.isOpen){controller.close();} else{controller.open();}},child:Text("$timestep ms",style:TextStyle(fontSize:18)));
+                            },
+                            menuChildren: [for(int k=0; k<frame.length; k++) ListTile(selectedColor:Colors.lime,focusColor:Colors.grey,onTap:(){timestep=frame[k];setState((){});},title:Text(frame[k].toString(),style:TextStyle(fontSize:18)))],
+                          ),
+                        ]),                      
+                        SizedBox(height:10),
+                        simspeed( context),
+                        SizedBox(height: 10,),
+                        Row(spacing:50,children:[
+                          Text("Total time so simulation in s-",style:TextStyle(fontSize:18)),
+                          simtime(context),
+                        ]),
                         SizedBox(height:30),
-                        simtimestep(),                        
-                        SizedBox(height:30),
-                        simspeed(),
-                        
                         Row(spacing:30,children:[
                           SizedBox(width:200,height:40,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.green,child:Text("check & Save",style:TextStyle(color: Colors.white)),onPressed:(){
                             bool checkdist= chkdist();
@@ -724,7 +776,7 @@ class Simparastate extends State<Sim_para> {
                             }
                           })),
                           if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){
-                            if(chkdist()) {()async{ await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user);}));setState((){});}; }
+                            if(chkdist()) {()async{ await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});}; }
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),
