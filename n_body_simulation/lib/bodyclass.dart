@@ -22,12 +22,16 @@ class BodyDetails extends HiveObject {
   @HiveField(5)
   int color;
 
+  @HiveField(6)
+  double mass;
+
   BodyDetails(
     this.name,
     this.lastValue,
     this.lastVelocities,
     this.lastAcceleration,
     this.radius,
-    this.color
+    this.color,
+    this.mass
   );
 }

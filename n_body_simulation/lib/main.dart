@@ -19,8 +19,8 @@ class BodyDetails extends HiveObject{
   List<double> lastAcceleration;
   BodyDetails(this.name,this.lastValue,this.lastVelocities,this.lastAcceleration);
 }*/
-Map<String, List<dynamic>> one={'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]};
-Map<String, List<dynamic>> two={'ssc': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())]};
+Map<String, List<dynamic>> one={'ss': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)]};
+Map<String, List<dynamic>> two={'ssc': [BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)]};
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (show==2) Text("you have already used this title in your simulations"),
                       OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
                       if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){
-                        data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())];
+                        data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
                         setStateDialog((){});
                         setState((){});
                         user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);

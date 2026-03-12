@@ -3,6 +3,16 @@ import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
+class CalcParams {
+  final dynamic simdata;
+  final double timestep;
+  final dynamic sp1;
+  final int simtimes;
+
+  CalcParams(this.simdata, this.timestep, this.sp1, this.simtimes);
+}
+const double G=6.673e-11;
 // ignore: camel_case_types
 class Sim_para extends StatefulWidget {
   const Sim_para({super.key,required this.user, required this.title, required this.coordinates,required this.data});
@@ -16,6 +26,59 @@ class Sim_para extends StatefulWidget {
 }
 class Simparastate extends State<Sim_para> {
   // ignore: non_constant_identifier_names
+  List<List<List<double>>> animation=[];//[[px,py,pz,vz,vy,vz]- of each body , mx, my, mz] - of each frame
+
+  void calculate(Map<String,List<dynamic>> simdata,double timestep, sp1,simtimes){
+    int dt=sp1*timestep;
+    List<List<double>> L=[];
+    for(int k=0; k<simdata[simtitle]!.length;k++){
+      L.add(simdata[simtitle]![k].lastValue.addAll(simdata[simtitle]![k].lastVelocities));
+    }
+    animation.add(L);
+    print(animation);
+    L=[];
+    for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
+      List l=animation[-1];
+      for (int m=0; m<simdata[simtitle]!.length;m++){
+        double ax=0,ay=0,az=0,vx=l[m][3],vy=l[m][4],vz=l[m][5],px=l[m][0],py=l[m][1],pz=l[m][2];
+        for (int d=0; d<simdata[simtitle]!.length;d++){
+          
+          num r=pow((pow((l[d][0]-px),2)+pow((l[d][1]-py),2)+pow((l[d][2]),2)),0.5);
+          if (d!=0){
+            ax+=G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
+            ay+=G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
+            az+=G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
+          }
+          else{
+          }
+          vx+=ax*dt;
+          vy+=ay*dt;
+          vz+=az*dt;
+          px+=(vx*vx-l[m][3]*l[m][3])/(2*ax);
+          py+=(vy*vy-l[4][4]*l[m][4])/(2*ay);
+          px+=(vz*vz-l[m][5]*l[m][5])/(2*az);
+          
+          
+        }
+        /*mx+=px;
+        my+=py;
+        mz+=pz;*/
+        print([px,py,pz,vx,vy,vz]);
+        L.add([px,py,pz,vx,vy,vz]);
+      }
+      /*mx/=simdata[simtitle].length;
+      my/=simdata[simtitle].length;
+      mz/=simdata[simtitle].length;*/
+      print(L);
+      animation.add(L);
+      L=[];
+    }
+    setState((){});
+  }
+  void calculateTask(CalcParams params) {
+    calculate(params.simdata, params.timestep, params.sp1, params.simtimes);
+  }
+  
   late String simtitle;
   late Map<String, List<dynamic>> simdata;
   int valNoBody=0;
@@ -25,22 +88,22 @@ class Simparastate extends State<Sim_para> {
   bool errortitle=false; 
   late Future<Box> future;
   bool checked=false;
-  List<List> distances=[];
+  //List<List> distances=[];
   double timestep=200;
   List<double> frame=[10,20,50,75,100,150,200,250,400,500,750,1000,1500,2000];
   bool chkdist(){
     bool checkdist=true;
     for (int k=0; k<simdata[simtitle]!.length;k++){
-      List dist=[];
+      //List dist=[];
       for (int m=0; m<simdata[simtitle]!.length;m++){
         num disst=pow((pow((simdata[simtitle]![m].lastValue[0]-simdata[simtitle]![k].lastValue[0]),2)+pow((simdata[simtitle]![m].lastValue[1]-simdata[simtitle]![k].lastValue[1]),2)+pow((simdata[simtitle]![m].lastValue[2]-simdata[simtitle]![k].lastValue[2]),2)),0.5);
         //print(disst);
         if (simdata[simtitle]![m].radius+simdata[simtitle]![k].radius>disst&& disst!=0){
           checkdist=false;
         }
-        dist.add(disst);
+        //dist.add(disst);
       }
-      distances.add(dist);
+      //distances.add(dist);
     }
     return checkdist;
   }
@@ -60,7 +123,9 @@ class Simparastate extends State<Sim_para> {
     TextEditingController controllervx = TextEditingController(text: simdata[simtitle][i].lastVelocities[0].toString());
     TextEditingController controllervy = TextEditingController(text: simdata[simtitle][i].lastVelocities[1].toString());
     TextEditingController controllervz = TextEditingController(text: simdata[simtitle][i].lastVelocities[2].toString());
+    TextEditingController controllerm = TextEditingController(text: simdata[simtitle][i].mass.toString());
     TextEditingController controllerr = TextEditingController(text: simdata[simtitle][i].radius.toString());
+    bool errorm=false;
     bool errorpz=false;
     bool errorvz=false;
     bool errorvy=false;
@@ -250,7 +315,40 @@ class Simparastate extends State<Sim_para> {
               }),
             ],),
             Row(spacing:20,children: [
-              SizedBox(width:200,child:Text("Initial positions",style:TextStyle(fontSize:18))),
+              SizedBox(width:200,child:Text("Mass of body(kg)",style:TextStyle(fontSize:18))),
+              Text("m-",style:TextStyle(fontSize:18)),
+
+              SizedBox(width:200,child:TextField(
+                //readOnly:enablepx,
+                
+                decoration:InputDecoration(),
+                controller:controllerm,
+                onChanged:(String text){
+                  int? n=int.tryParse(text);
+                  if (n!=null && n>0){
+                    errorm=false;
+                  }
+                  else{
+                    errorm=true;
+                  }
+                  setStatebody((){});
+                },
+                
+                onSubmitted:(String text){
+                  if (!errorm){
+                    //print(simdata[simtitle][i].lastValue);
+                    simdata[simtitle][i].mass=int.parse(text);
+                    user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
+                    setStatebody((){});
+                    setState((){});
+                  }
+                }
+              )),
+              if (errorm) Icon(Icons.error,color:Colors.red),
+              if (errorm) Text("only positive numbers can be used and not empty",style:TextStyle(fontSize:15)),
+            ],),
+            Row(spacing:20,children: [
+              SizedBox(width:200,child:Text("Initial positions(m)",style:TextStyle(fontSize:18))),
               Text("x-",style:TextStyle(fontSize:18)),
 
               SizedBox(width:200,child:TextField(
@@ -545,6 +643,7 @@ class Simparastate extends State<Sim_para> {
   Widget simtime(BuildContext context){
     TextEditingController controllersimtime=TextEditingController(text: simtimes.toString());
     bool errorsimtime=false;
+
     return StatefulBuilder(builder: (context, setStatesimtime) {
       return Row(
         spacing:10,children:[
@@ -605,10 +704,12 @@ class Simparastate extends State<Sim_para> {
   }
   @override
   Widget build(BuildContext context) {
+    //bool checked=false; //// this was fucking edited 
     return FutureBuilder(
       future:future,
       builder:(context,snapshot){
         if(snapshot.connectionState == ConnectionState.done){
+          
           //simdata=widget.user!=" "?snapshot.data!.get('userdata',defaultValue:simdata):snapshot.data!.get('data_of_computer',defaultValue:simdata);
           Map<String, List<dynamic>> simdata =(widget.user != " "? snapshot.data!.get('userdata', defaultValue: widget.data): snapshot.data!.get('data_of_computer', defaultValue: widget.data)).cast<String, List<dynamic>>();
           //print(snapshot.data!.get('userdata'));
@@ -617,7 +718,7 @@ class Simparastate extends State<Sim_para> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop();}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata,timestep,sp1,simtimes); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -689,7 +790,7 @@ class Simparastate extends State<Sim_para> {
                             width:200,
                             child:TextField(
                               style:TextStyle(color:Colors.black,fontSize:20),
-                              maxLength:3,
+                              maxLength:2,
                               onChanged:(String nowstr){
                                 int? n=int.tryParse(nowstr);
                                 if (n!=null){
@@ -713,7 +814,7 @@ class Simparastate extends State<Sim_para> {
                                   List<BodyDetails> simu=[];
                                   for (int i=0; i<int.parse(text);i++){
                                     int m=i+1;
-                                    simu.add(BodyDetails('Body $m',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()));
+                                    simu.add(BodyDetails('Body $m',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1));
                                   }
                                   //print(simu);
                                   simdata[simtitle]=simu;
@@ -721,7 +822,7 @@ class Simparastate extends State<Sim_para> {
                                 }
                                 else {
                                   //return showDialog();
-                                  simdata[simtitle]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32())];
+                                  simdata[simtitle]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
                                   widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                                 }
                                 setState((){});
@@ -750,12 +851,15 @@ class Simparastate extends State<Sim_para> {
                         simspeed( context),
                         SizedBox(height: 10,),
                         Row(spacing:50,children:[
-                          Text("Total time so simulation in s-",style:TextStyle(fontSize:18)),
+                          Text("Total time of simulation (in s)-",style:TextStyle(fontSize:18)),
                           simtime(context),
                         ]),
+                        Row(spacing:10,children:[Icon(Icons.info_outlined),Text("The how this works is that frame rate is the refresh rate of simulation, totl time is the total time your sim is shown. so actual time of your simulation in gravitastion is this times simspeed."),]),
                         SizedBox(height:30),
                         Row(spacing:30,children:[
                           SizedBox(width:200,height:40,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.green,child:Text("check & Save",style:TextStyle(color: Colors.white)),onPressed:(){
+                            
+
                             bool checkdist= chkdist();
                             
                             if (checkdist&& !titledit){
@@ -774,9 +878,19 @@ class Simparastate extends State<Sim_para> {
                                 );
                               },);
                             }
+                            //print(checked);
+                            showDialog(context:context,builder:(BuildContext context) {
+                              int n=simdata[simtitle]!.length*simdata[simtitle]!.length*10;
+                              double nt=n*simtimes/timestep*1000;
+                              return AlertDialog(
+                                title:Text("INFO",style:TextStyle(fontSize:25)),
+                                content:Text("A total of $nt calculations will be done. please check if your computer is RAM capable.also a total of $n calculation res;uts will be displayed in $timestep ms when you proceed.",style:TextStyle(fontSize:18)),
+                                actions:[OutlinedButton(onPressed: (){Navigator.of(context).pop();setState((){});},child:Text("Ok",style:TextStyle(fontSize:18)))]
+                              );
+                            },);
                           })),
                           if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){
-                            if(chkdist()) {()async{ await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,data:simdata,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});}; }
+                            if(chkdist()) {()async{calculate(simdata,timestep,sp1,simtimes); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});}; }
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),
@@ -785,7 +899,7 @@ class Simparastate extends State<Sim_para> {
                               );
                             },);}
                           },child:Text("Simulate",style:TextStyle(color: Colors.white)))),
-                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle]!.add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32()));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
+                          FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle]!.add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
                           MenuAnchor(
                             menuChildren:[TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
                             
