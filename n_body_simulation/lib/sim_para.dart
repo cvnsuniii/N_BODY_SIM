@@ -5,9 +5,9 @@ import 'package:hive/hive.dart';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 class CalcParams {
-  final dynamic simdata;
+  final Map<String,List<dynamic>> simdata;
   final double timestep;
-  final dynamic sp1;
+  final double sp1;
   final int simtimes;
 
   CalcParams(this.simdata, this.timestep, this.sp1, this.simtimes);
@@ -27,52 +27,55 @@ class Sim_para extends StatefulWidget {
 class Simparastate extends State<Sim_para> {
   // ignore: non_constant_identifier_names
   List<List<List<double>>> animation=[];//[[px,py,pz,vz,vy,vz]- of each body , mx, my, mz] - of each frame
-
+  bool isCalculating=false;
   void calculate(Map<String,List<dynamic>> simdata,double timestep, sp1,simtimes){
     int dt=sp1*timestep;
     List<List<double>> L=[];
-    for(int k=0; k<simdata[simtitle]!.length;k++){
-      L.add(simdata[simtitle]![k].lastValue.addAll(simdata[simtitle]![k].lastVelocities));
+    for(int k=0; k<simdata[simtitle]!.length.toInt();k++){
+      L.add(simdata[simtitle]![k].lastValue+(simdata[simtitle]![k].lastVelocities));
     }
     animation.add(L);
     print(animation);
     L=[];
     for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
-      List l=animation[-1];
-      for (int m=0; m<simdata[simtitle]!.length;m++){
+      List<List<double>> l=animation[animation.length-1];
+      for (int m=0; m<simdata[simtitle]!.length.toInt();m++){
         double ax=0,ay=0,az=0,vx=l[m][3],vy=l[m][4],vz=l[m][5],px=l[m][0],py=l[m][1],pz=l[m][2];
-        for (int d=0; d<simdata[simtitle]!.length;d++){
+        for (int d=0; d<simdata[simtitle]!.length.toInt();d++){
           
           num r=pow((pow((l[d][0]-px),2)+pow((l[d][1]-py),2)+pow((l[d][2]),2)),0.5);
-          if (d!=0){
+          if (r!=0){
             ax+=G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
             ay+=G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
             az+=G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
+            
+            px+=vx*dt+0.5*ax*dt*dt;
+            py+=vy*dt+0.5*ay*dt*dt;
+            px+=vz*dt+0.5*az*dt*dt;
+            vx+=ax*dt;
+            vy+=ay*dt;
+            vz+=az*dt;
           }
           else{
           }
-          vx+=ax*dt;
-          vy+=ay*dt;
-          vz+=az*dt;
-          px+=(vx*vx-l[m][3]*l[m][3])/(2*ax);
-          py+=(vy*vy-l[4][4]*l[m][4])/(2*ay);
-          px+=(vz*vz-l[m][5]*l[m][5])/(2*az);
+          
           
           
         }
         /*mx+=px;
         my+=py;
         mz+=pz;*/
-        print([px,py,pz,vx,vy,vz]);
+        //print([px,py,pz,vx,vy,vz]);
         L.add([px,py,pz,vx,vy,vz]);
       }
       /*mx/=simdata[simtitle].length;
       my/=simdata[simtitle].length;
       mz/=simdata[simtitle].length;*/
-      print(L);
+      //print(L);
       animation.add(L);
       L=[];
     }
+    print(animation);
     setState((){});
   }
   void calculateTask(CalcParams params) {
@@ -324,7 +327,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllerm,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null && n>0){
                     errorm=false;
                   }
@@ -337,7 +340,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorm){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].mass=int.parse(text);
+                    simdata[simtitle][i].mass=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -357,7 +360,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllerpx,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorpx=false;
                   }
@@ -370,7 +373,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorpx){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastValue[0]=int.parse(text);
+                    simdata[simtitle][i].lastValue[0]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -389,7 +392,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllerpy,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorpy=false;
                   }
@@ -402,7 +405,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorpy){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastValue[1]=int.parse(text);
+                    simdata[simtitle][i].lastValue[1]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -421,7 +424,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllerpz,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorpz=false;
                   }
@@ -434,7 +437,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorpz){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastValue[2]=int.parse(text);
+                    simdata[simtitle][i].lastValue[2]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -465,7 +468,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllerr,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null && n>=0){
                     errorr=false;
                   }
@@ -478,7 +481,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorr){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].radius=int.parse(text);
+                    simdata[simtitle][i].radius=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -500,7 +503,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllervx,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorvx=false;
                   }
@@ -513,7 +516,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorvx){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastVelocities[0]=int.parse(text);
+                    simdata[simtitle][i].lastVelocities[0]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -532,7 +535,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllervy,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorvy=false;
                   }
@@ -545,7 +548,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorvy){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastVelocities[1]=int.parse(text);
+                    simdata[simtitle][i].lastVelocities[1]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -564,7 +567,7 @@ class Simparastate extends State<Sim_para> {
                 decoration:InputDecoration(),
                 controller:controllervz,
                 onChanged:(String text){
-                  int? n=int.tryParse(text);
+                  double? n=double.tryParse(text);
                   if (n!=null){
                     errorvz=false;
                   }
@@ -577,7 +580,7 @@ class Simparastate extends State<Sim_para> {
                 onSubmitted:(String text){
                   if (!errorvz){
                     //print(simdata[simtitle][i].lastValue);
-                    simdata[simtitle][i].lastVelocities[2]=int.parse(text);
+                    simdata[simtitle][i].lastVelocities[2]=double.parse(text);
                     user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);
                     setStatebody((){});
                     setState((){});
@@ -718,7 +721,7 @@ class Simparastate extends State<Sim_para> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop();}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata,timestep,sp1,simtimes); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{await compute(calculateTask,CalcParams(simdata, timestep, sp1, simtimes),); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -890,7 +893,7 @@ class Simparastate extends State<Sim_para> {
                             },);
                           })),
                           if(checked) SizedBox(height:40,width:150,child:FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:(){
-                            if(chkdist()) {()async{calculate(simdata,timestep,sp1,simtimes); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});}; }
+                            if(chkdist()) {()async{await compute(calculateTask,CalcParams(simdata, timestep, sp1, simtimes),); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes);}));setState((){});}; }
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),
