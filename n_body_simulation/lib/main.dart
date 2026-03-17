@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );}
     
   );}
-  Future funcAddSim(BuildContext context,data,user )async{
+  Future funcAddSim(BuildContext context,data,user,bool r )async{
     return showDialog(
       context:context,
       builder:(context){
@@ -100,6 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
               return StatefulBuilder(
                 builder:(context, setStateDialog){
                   //return FutureBuilder
+                  if(r){
+                    Navigator.of(context).pop();
+                  }
                   return AlertDialog(
                     title:Text("Add Title"),
                     actions:[
@@ -125,14 +128,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       if(show==1) Text("the title cant be empty"),
                       if (show==2) Text("you have already used this title in your simulations"),
                       OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
-                      if (show==0) OutlinedButton(child:Text("Create"),onPressed:(){
+                      if (show==0) OutlinedButton(child:Text("Create"),onPressed:()async{
                         data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
                         setStateDialog((){});
                         setState((){});
                         user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                        r=await Navigator.of(context).push(MaterialPageRoute(builder: (context){
                           return Sim_para(user:user,title:texti,coordinates:data[texti],data:data);
                         }));
+                        setStateDialog((){});
                       })
                     ]
                   );
@@ -331,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 size: 35,
                                 Icons.add,
                               ),
-                              onPressed: ()async{await funcAddSim(context,data,user);setState((){});}
+                              onPressed: ()async{await funcAddSim(context,data,user,false);setState((){});}
                             ),
                           ],
                         ),
