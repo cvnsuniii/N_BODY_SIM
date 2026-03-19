@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return AlertDialog(
           contentPadding:EdgeInsets.all(20),
           title:Text("LOGOUT?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
-          content:Text("are you sure to logout ",style:TextStyle(color:Colors.black,fontSize:18)),
+          content:Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("are you sure to logout ",style:TextStyle(color:Colors.black,fontSize:18)))]),
           actions:[
             OutlinedButton(child:Text("confirm"),onPressed:(){setState((){user=" ";});Navigator.of(context).pop();}),
             OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();})
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
     builder:(context){return AlertDialog(
       contentPadding:EdgeInsets.all(20),
       title:Text("Delete?",style:TextStyle(color:Color.fromARGB(255, 39, 129, 202),fontSize:25)),
-      content:Text("are you sure to delete this simulation including its data ",style:TextStyle(color:Colors.black,fontSize:18)),
+      content:Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("are you sure to delete this simulation including its data ",style:TextStyle(color:Colors.black,fontSize:18)))]),
       actions:[
         OutlinedButton(child:Text("confirm"),onPressed:(){data.remove(data.keys.toList()[index]);Navigator.of(context).pop(data);}),
         OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop(data);})
@@ -125,8 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                       ),
                       if (show!=0)Icon(Icons.error),
-                      if(show==1) Text("the title cant be empty"),
-                      if (show==2) Text("you have already used this title in your simulations"),
+                      if(show==1) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("the title cant be empty"))]),
+                      if (show==2) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("you have already used this title in your simulations"))]),
                       OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
                       if (show==0) OutlinedButton(child:Text("Create"),onPressed:()async{
                         data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
@@ -161,7 +161,79 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     );
   }   
-    
+
+  List<Widget> appbar(BuildContext context,snapshot,data){return [
+    Text(
+      "Welcome, $user",
+      style: TextStyle(
+        color:  Colors.white,
+        fontSize:20
+      ),
+    ),
+    if (user!=" ") OutlinedButton(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(Colors.white),
+      ),
+      onPressed: () {
+        func(context);
+        if (user==" "){snapshot.data!.put('userdata',one);data=snapshot.data!.get('data_of_computer',defaultValue: two);setState((){});}
+      },
+      child: Text(
+        "Logout",
+        style: TextStyle(
+          color: Colors.blue,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ), //shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+    SizedBox(width: 10),
+    if (user==" ") FloatingActionButton(
+      heroTag: null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(7),
+      ),
+      onPressed: () async {
+        final datas = (await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => Login(title: "hi"),
+          ),
+        ));
+        data=datas.values.toList()[0];
+        user=datas.keys.toList()[0];
+        snapshot.data!.put('userdata', data);
+        setState(() {});
+      },
+      tooltip: "login to view your simulations",
+      child: Text(
+        "Login",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    ),
+    SizedBox(width: 10),
+    if (user==" ") FloatingActionButton(
+      heroTag: null,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(7),
+      ),
+      onPressed: () async {
+        final datas = (await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => Login(title: "hi"),
+          ),
+        ));
+        data=datas.values.toList()[0];
+        user=datas.keys.toList()[0];
+        
+        snapshot.data!.put('userdata', data);
+        setState(() {});
+      },
+      tooltip: "Make an account",
+      child: Text(
+        "Signup",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+    ),
+  ];}
   
   String user = " ";
 
@@ -171,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     future = Hive.openBox('data');
   }
-
+  //PreferredSizeWidget x=PreferredSizeWidget
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -186,14 +258,15 @@ class _MyHomePageState extends State<MyHomePage> {
           */
           Map<String, List<dynamic>> data =(user != " "? snapshot.data!.get('userdata', defaultValue: one): snapshot.data!.get('data_of_computer', defaultValue: two)).cast<String, List<dynamic>>();
           
-          //Map<String, List<dynamic>> data =dataComputer;// change this x
+          //Map<String, List<dynamic>> data =dataComputer;// change this xlist li
           //final keysc = dataComputer.keys.toList();
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
           print(data);
           return Scaffold(
-            appBar: AppBar(
+            appBar:  AppBar(
+              bottom: MediaQuery.sizeOf(context).width>=600?null:PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
               actionsPadding: EdgeInsets.only(right: 20, top: 5, bottom: 5),
               backgroundColor: const Color.fromARGB(255, 35, 35, 35),
               leading: Image(image: AssetImage("assets/images/aac_logo.png")),
@@ -204,89 +277,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontSize: 40,
                 ),
               ),
-              actions: <Widget>[
-                Text(
-                  "Welcome, $user",
-                  style: TextStyle(
-                    color:  Colors.white,
-                    fontSize:20
-                  ),
-                ),
-                if (user!=" ") OutlinedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                  ),
-                  onPressed: () {
-                    func(context);
-                    if (user==" "){snapshot.data!.put('userdata',one);data=snapshot.data!.get('data_of_computer',defaultValue: two);setState((){});}
-                  },
-                  child: Text(
-                    "Logout",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ), //shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-                SizedBox(width: 10),
-                if (user==" ") FloatingActionButton(
-                  heroTag: null,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  onPressed: () async {
-                    final datas = (await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => Login(title: "hi"),
-                      ),
-                    ));
-                    data=datas.values.toList()[0];
-                    user=datas.keys.toList()[0];
-                    snapshot.data!.put('userdata', data);
-                    setState(() {});
-                  },
-                  tooltip: "login to view your simulations",
-                  child: Text(
-                    "Login",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(width: 10),
-                if (user==" ") FloatingActionButton(
-                  heroTag: null,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  onPressed: () async {
-                    final datas = (await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => Login(title: "hi"),
-                      ),
-                    ));
-                    data=datas.values.toList()[0];
-                    user=datas.keys.toList()[0];
-                    
-                    snapshot.data!.put('userdata', data);
-                    setState(() {});
-                  },
-                  tooltip: "Make an account",
-                  child: Text(
-                    "Signup",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
+              actions: MediaQuery.sizeOf(context).width>=600?appbar(context,snapshot,data):null,
             ),
+
             body: Center(
               child: Container(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
-                padding: EdgeInsets.only(
+                padding: MediaQuery.sizeOf(context).width>=1024?EdgeInsets.only(
                   left: 120,
                   right: 120,
                   top: 80,
                   bottom: 50,
-                ),
+                ):MediaQuery.sizeOf(context).width>=600?EdgeInsets.only(left:80,right:80,top:50,bottom:50):EdgeInsets.only(left:30,right:30,top:50,bottom:50),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.fill,
@@ -295,11 +298,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: SingleChildScrollView(
                   child: Container(
-                    padding: EdgeInsets.all(20),
-
+                    padding: MediaQuery.sizeOf(context).width>=600?EdgeInsets.all(20):EdgeInsets.all(5),
+                    height:MediaQuery.of(context).size.height-194,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha:0.65),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: MediaQuery.sizeOf(context).width>=600?BorderRadius.circular(10):BorderRadius.circular(5),
                       border: BoxBorder.all(width: 1, color: Colors.white),
                     ),
                     child: Column(
@@ -312,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                         AppBar(
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: MediaQuery.sizeOf(context).width>=600?BorderRadius.circular(10):BorderRadius.circular(5),
                           ),
                           centerTitle: true,
                           backgroundColor: Colors.white.withValues(alpha:0.8),
@@ -358,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Material(
                               color: Colors.transparent,
                               child: ListView.builder(
-                                padding: EdgeInsets.all(10),
+                                padding: MediaQuery.sizeOf(context).width>=600?EdgeInsets.all(10):EdgeInsets.all(5),
 
                                 itemCount: keys.length,
                                 itemBuilder: (context, index) => ListTile(
@@ -408,7 +411,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Material(
                               color: Colors.transparent,
                               child: ListView.builder(
-                                padding: EdgeInsets.all(10),
+                                padding: MediaQuery.sizeOf(context).width>=600?EdgeInsets.all(10):EdgeInsets.all(5),
 
                                 itemCount: keys.length,
                                 itemBuilder: (context, index) => ListTile(

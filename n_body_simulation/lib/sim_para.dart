@@ -787,7 +787,12 @@ class Simparastate extends State<Sim_para> {
               child: Container(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height,
-                padding: EdgeInsets.only(bottom:50,right:120,left:120,top:80),
+                padding: MediaQuery.sizeOf(context).width>=1024?EdgeInsets.only(
+                  left: 120,
+                  right: 120,
+                  top: 80,
+                  bottom: 50,
+                ):MediaQuery.sizeOf(context).width>=600?EdgeInsets.only(left:80,right:80,top:50,bottom:50):EdgeInsets.only(left:30,right:30,top:50,bottom:50),
                 decoration: BoxDecoration(
 
                   image: DecorationImage(
