@@ -16,17 +16,17 @@ class CalcParams {
 }
 const double G=6.673e-11;
 // ignore: camel_case_types
-class Sim_para extends StatefulWidget {
-  const Sim_para({super.key,required this.user, required this.title, required this.coordinates,required this.data});
+class Sim_para_tab extends StatefulWidget {
+  const Sim_para_tab({super.key,required this.user, required this.title, required this.coordinates,required this.data});
   final String user;
   final String title;
   final List coordinates;
   final Map<String, List<dynamic>> data;
   
   @override
-  State<Sim_para> createState() => Simparastate();
+  State<Sim_para_tab> createState() => Simparastatetab();
 }
-class Simparastate extends State<Sim_para> {
+class Simparastatetab extends State<Sim_para_tab> {
   // ignore: non_constant_identifier_names
   List<List<List<double>>> animation=[];//[[px,py,pz,vz,vy,vz]- of each body , mx, my, mz] - of each frame
   List<three.Vector3> centroids=[];
