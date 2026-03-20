@@ -260,7 +260,7 @@ class Simparastate extends State<Sim_para> {
               if (!editbody) Text(simdata[simtitle][i].name,style:TextStyle(fontSize:20)),
               if (editbody) Text("edit the body name here ",style:TextStyle(fontSize:20)),
               if (editbody) SizedBox(width:200,child:TextField(
-                
+                maxLength:24,
                 onChanged:(String text){
                   bool check= true;
                   for (int m=0; m<simdata[simtitle].length;m++){
@@ -481,7 +481,7 @@ class Simparastate extends State<Sim_para> {
               //Text(nowcolor(),style:TextStyle(fontSize:18)),
               //Text(nowcolor(),style:TextStyle(fontSize:18)),
               MenuAnchor(
-                builder:(BuildContext context, MenuController controller, Widget? child) {return TextButton(onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}},child: Text("",style:TextStyle(fontSize: 18)),);},// fucking check the fucking error here 
+                builder:(BuildContext context, MenuController controller, Widget? child) {return FilledButton(style:ButtonStyle(backgroundColor:WidgetStateProperty.fromMap({WidgetState.any:Color(simdata[simtitle][i].color)})),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}},child:Text(""));},// fucking check the fucking error here 
                 
                 menuChildren:[
                   for (int m=0; m<colopal.length; m++) ListTile(onTap:(){simdata[simtitle][i].color=colopal[m].toARGB32();user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setStatebody((){});setState((){});},leading:Container(width:18,height:18 ,decoration:BoxDecoration(color:colopal[m],border:BoxBorder.all(width:2,color:Colors.black))),title:Text(colopalNames[m],style:TextStyle(fontSize:18)))
@@ -753,7 +753,7 @@ class Simparastate extends State<Sim_para> {
   Widget titleinput(BuildContext context,snapshot){
     return SizedBox(
       width:200,child:TextField(
-                            
+        maxLength:24,                    
         onChanged: (String text){
           if (widget.data.keys.toList().contains(text)&& text !=simtitle){
             errortitle=true;
@@ -905,9 +905,10 @@ class Simparastate extends State<Sim_para> {
                           if (valNoBody==1) Text("invalid number type.please enter a integer",style:TextStyle(color:Colors.black,fontSize:14)),
                           if(valNoBody==2) Text("Input cant be negative and less than 2",style:TextStyle(color:Colors.black,fontSize:14)),
                         ],),
-                        Row(spacing:20,children:[Icon(Icons.info_outlined,size:15),Text("Press Enter to validate the number of bodies.note that using this feature discards all previous bodies and creates a new list of bodies with this number")]),
+                        Row(textDirection:TextDirection.rtl,spacing:20,children:[Icon(Icons.info_outlined,size:15),Expanded(child:Text("Press Enter to validate the number of bodies.note that using this feature discards all previous bodies and creates a new list of bodies with this number"))]),
                         SizedBox(height:30),
-                        Row(spacing:30,children: [Icon(Icons.info_outlined,size:20),Text("please press enter to make changes in every text field.")],),
+                        Row(spacing:30,children: [Icon(Icons.info_outlined,size:20),Text("please press enter to make changes in every text field.",style:TextStyle(backgroundColor:Colors.amber,fontSize:20))],),
+                        SizedBox(height:30),
                         for(int i=0; i<(simdata[simtitle]!.length); i++) bodyWidget(context,i,snapshot,widget.user,simdata,simtitle),
                         Row(spacing:50,children:[
                           Tooltip(message:"advised to choose according to your computer capabilities",child:Text("Frame time/ timestep(ms)",style:TextStyle(fontSize:18))),
@@ -956,7 +957,7 @@ class Simparastate extends State<Sim_para> {
                               double nt=n*simtimes/timestep*1000;
                               return AlertDialog(
                                 title:Text("INFO",style:TextStyle(fontSize:25)),
-                                content:Text("A total of $nt calculations will be done. please check if your computer is RAM capable.also a total of $n calculation res;uts will be displayed in $timestep ms when you proceed.",style:TextStyle(fontSize:18)),
+                                content:Text("A total of $nt calculations will be done. please check if your computer is RAM capable.also a total of $n calculation res;uts will be displayed in $timestep ms when you proceed.                             gdfvnbjn                           ",style:TextStyle(fontSize:18)),
                                 actions:[OutlinedButton(onPressed: (){Navigator.of(context).pop();setState((){});},child:Text("Ok",style:TextStyle(fontSize:18)))]
                               );
                             },);

@@ -224,7 +224,7 @@ class _MyHomePageState extends State<MyHomePage> {
       onPressed: () async {
         final datas = (await Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) {if (MediaQuery.sizeOf(context).width>=1024){ return Login(title: "hi");} else{ return Login_phone(title: "hi");}},,
+            builder: (context) {if (MediaQuery.sizeOf(context).width>=1024){ return Login(title: "hi");} else{ return Login_phone(title: "hi");}},
           ),
         ));
         data=datas.values.toList()[0];
@@ -953,9 +953,9 @@ class _MyHomePageState extends State<MyHomePage> {
   //PreferredSizeWidget x=PreferredSizeWidget
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.sizeOf(context).width>=1024) {computer(context);}
-    else if (MediaQuery.sizeOf(context).width>=600) {tab(context);}
-    else{ phone(context);}
+    if (MediaQuery.sizeOf(context).width>=1300) {return computer(context);}
+    else if (MediaQuery.sizeOf(context).width>=600) {return tab(context);}
+    else {return  phone(context);}
   }
   
 }
