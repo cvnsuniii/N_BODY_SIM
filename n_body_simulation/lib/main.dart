@@ -737,7 +737,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
-          print(data);
+          //print(data);
           return Scaffold(
             appBar:  AppBar(
               //bottom: MediaQuery.sizeOf(context).width>=600?null:PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),

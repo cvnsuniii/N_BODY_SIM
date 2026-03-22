@@ -32,7 +32,7 @@ class Simparastatephone extends State<Sim_para_phone> {
   List<three.Vector3> centroids=[];
   bool isCalculating=false;
   void mist(){
-    print("uwsnvdj");
+    //print("uwsnvdj");
   }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     double dt=sp1*timestep;
@@ -54,7 +54,7 @@ class Simparastatephone extends State<Sim_para_phone> {
     centroids.add(x);
     x=three.Vector3(0,0,0);
     animation.add(L);
-    print(animation);
+    //print(animation);
     L=[];
     for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
       List<List<double>> l=animation[animation.length-1];
@@ -102,8 +102,8 @@ class Simparastatephone extends State<Sim_para_phone> {
     }
     g.divideScalar(((simtimes*1000/timestep).toInt()+1)*simdata[simtitle]!.length);
     centroids.add(g);
-    print(centroids);
-    print(animation);
+    //print(centroids);
+    //print(animation);
     setState((){});
   }
   
@@ -818,7 +818,7 @@ class Simparastatephone extends State<Sim_para_phone> {
           //simdata=widget.user!=" "?snapshot.data!.get('userdata',defaultValue:simdata):snapshot.data!.get('data_of_computer',defaultValue:simdata);
           Map<String, List<dynamic>> simdata =(widget.user != " "? snapshot.data!.get('userdata', defaultValue: widget.data): snapshot.data!.get('data_of_computer', defaultValue: widget.data)).cast<String, List<dynamic>>();
           //print(snapshot.data!.get('userdata'));
-          print(simdata);
+          //print(simdata);
           return Scaffold(
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),

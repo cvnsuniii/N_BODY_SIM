@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:three_js_objects/three_js_objects.dart';
 import 'package:three_js/three_js.dart' as three;
-import 'package:three_js_math/three_js_math.dart' as tmath;
+//import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'dart:math';
 import 'dart:async';
 //import 'package:three_js_geometry/three_js_geometry.dart';
@@ -60,7 +60,7 @@ class Simstate extends State<Sim> {
     double fovRadians = 45 * (pi / 180);
     // Use an offset (e.g., 1.2) to add a small margin around the points
     double distance = (widget.radius / sin(fovRadians / 2)) * 1.2;
-    print(distance);
+    //print(distance);
     threeJs.camera = three.PerspectiveCamera(45, threeJs.width / threeJs.height, 1, 2200);
     threeJs.camera.position.setValues(centroids[centroids.length-1].x,centroids[centroids.length-1].y,centroids[centroids.length-1].z+distance);
 
@@ -122,7 +122,7 @@ class Simstate extends State<Sim> {
       future:future ,
       builder:(context, snapshot) {
         if(snapshot.connectionState == ConnectionState.done){
-          Map<String, List<dynamic>> simdata =(user != " "? snapshot.data!.get('userdata'): snapshot.data!.get('data_of_computer')).cast<String, List<dynamic>>();
+          //Map<String, List<dynamic>> simdata =(user != " "? snapshot.data!.get('userdata'): snapshot.data!.get('data_of_computer')).cast<String, List<dynamic>>();
           /*if(!intita){
             return const Center(child: CircularProgressIndicator()); 
           }*/

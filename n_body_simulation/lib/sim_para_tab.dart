@@ -33,7 +33,7 @@ class Simparastatetab extends State<Sim_para_tab> {
   double radius=100;
   bool isCalculating=false;
   void mist(){
-    print("uwsnvdj");
+    //print("uwsnvdj");
   }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     List<three.Vector3> pointgrp=[];
@@ -56,7 +56,7 @@ class Simparastatetab extends State<Sim_para_tab> {
     centroids.add(x);
     x=three.Vector3(0,0,0);
     animation.add(L);
-    print(animation);
+    //print(animation);
     L=[];
     for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
       List<List<double>> l=animation[animation.length-1];
@@ -105,8 +105,8 @@ class Simparastatetab extends State<Sim_para_tab> {
     }
     g.divideScalar(((simtimes*1000/timestep).toInt()+1)*simdata[simtitle]!.length);
     centroids.add(g);
-    print(centroids);
-    print(animation);
+    //print(centroids);
+    //print(animation);
     final boundingBox = three.BoundingBox().setFromPoints(pointgrp);
     final center = three.Vector3();
     boundingBox.getCenter(center);
@@ -830,7 +830,7 @@ class Simparastatetab extends State<Sim_para_tab> {
           //simdata=widget.user!=" "?snapshot.data!.get('userdata',defaultValue:simdata):snapshot.data!.get('data_of_computer',defaultValue:simdata);
           Map<String, List<dynamic>> simdata =(widget.user != " "? snapshot.data!.get('userdata', defaultValue: widget.data): snapshot.data!.get('data_of_computer', defaultValue: widget.data)).cast<String, List<dynamic>>();
           //print(snapshot.data!.get('userdata'));
-          print(simdata);
+          //print(simdata);
           return Scaffold(
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),

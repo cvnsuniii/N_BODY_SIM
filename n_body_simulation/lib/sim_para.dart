@@ -33,7 +33,7 @@ class Simparastate extends State<Sim_para> {
   double radius=100;
   bool isCalculating=false;
   void mist(){
-    print("uwsnvdj");
+    //print("uwsnvdj");
   }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     List<three.Vector3> pointgrp=[];
@@ -57,7 +57,7 @@ class Simparastate extends State<Sim_para> {
     centroids.add(x);
     x=three.Vector3(0,0,0);
     animation.add(L);
-    print(animation);
+    //print(animation);
     L=[];
     for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
       List<List<double>> l=animation[animation.length-1];
@@ -106,8 +106,8 @@ class Simparastate extends State<Sim_para> {
     }
     g.divideScalar(((simtimes*1000/timestep).toInt()+1)*simdata[simtitle]!.length);
     centroids.add(g);
-    print(centroids);
-    print(animation);
+    //print(centroids);
+    //print(animation);
     final boundingBox = three.BoundingBox().setFromPoints(pointgrp);
     final center = three.Vector3();
     boundingBox.getCenter(center);

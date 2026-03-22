@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:n_body_simulation/main.dart';
+//import 'package:n_body_simulation/main.dart';
 import 'bodyclass.dart';
 
 class Login extends StatefulWidget {

@@ -14,7 +14,7 @@ void calculate(Map<String,List<dynamic>> simdata,double timestep, sp1,simtimes){
     L.add(simdata[simtitle]![k].lastValue.addAll(simdata[simtitle]![k].lastVelocities));
   }
   animation.add(L);
-  print(animation);
+  //print(animation);
   L=[];
   for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
     List l=animation[-1];
@@ -42,13 +42,13 @@ void calculate(Map<String,List<dynamic>> simdata,double timestep, sp1,simtimes){
       /*mx+=px;
       my+=py;
       mz+=pz;*/
-      print([px,py,pz,vx,vy,vz]);
+      //print([px,py,pz,vx,vy,vz]);
       L.add([px,py,pz,vx,vy,vz]);
     }
     /*mx/=simdata[simtitle].length;
     my/=simdata[simtitle].length;
     mz/=simdata[simtitle].length;*/
-    print(L);
+    //print(L);
     animation.add(L);
     L=[];
   }
