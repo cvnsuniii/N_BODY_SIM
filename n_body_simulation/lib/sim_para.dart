@@ -3,7 +3,7 @@ import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 //import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'package:three_js/three_js.dart' as three;
 class CalcParams {
@@ -30,11 +30,14 @@ class Simparastate extends State<Sim_para> {
   // ignore: non_constant_identifier_names
   List<List<List<double>>> animation=[];//[[px,py,pz,vz,vy,vz]- of each body , mx, my, mz] - of each frame
   List<three.Vector3> centroids=[];
+  double radius=100;
   bool isCalculating=false;
   void mist(){
     print("uwsnvdj");
   }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
+    List<three.Vector3> pointgrp=[];
+    
     double dt=sp1*timestep;
     //print(dt);
     List<List<double>> L=[];
@@ -88,6 +91,7 @@ class Simparastate extends State<Sim_para> {
         my+=py;
         mz+=pz;*/
         //print([px,py,pz,vx,vy,vz]);
+        pointgrp.add(three.Vector3(px,py,pz));
         L.add([px,py,pz,vx,vy,vz]);
       }
       /*mx/=simdata[simtitle].length;
@@ -104,6 +108,15 @@ class Simparastate extends State<Sim_para> {
     centroids.add(g);
     print(centroids);
     print(animation);
+    final boundingBox = three.BoundingBox().setFromPoints(pointgrp);
+    final center = three.Vector3();
+    boundingBox.getCenter(center);
+    centroids.add(center);
+    final size = three.Vector3();
+    boundingBox.getSize(size);
+    double maxdim=max(size.x,max(size.y,size.z));
+    radius = maxdim / 2;
+    
     setState((){});
   }
   
@@ -241,15 +254,7 @@ class Simparastate extends State<Sim_para> {
     ];
     //MenuController controller=MenuController(:);
     //if(pop==true){pop=false; Navigator.of(context).pop;};
-    String nowcolor(){
-      for  (int k=0; k<colopal.length; ){
-        if (simdata[simtitle][i].color==colopal[k]){
-          return colopalNames[k];
-        }
-        
-      }
-      return " ";
-    }
+    
     
     return StatefulBuilder(
       builder:(context,
@@ -751,6 +756,7 @@ class Simparastate extends State<Sim_para> {
     });
   }
   Widget titleinput(BuildContext context,snapshot){
+    
     return SizedBox(
       width:200,child:TextField(
         maxLength:24,                    
@@ -807,12 +813,13 @@ class Simparastate extends State<Sim_para> {
           //simdata=widget.user!=" "?snapshot.data!.get('userdata',defaultValue:simdata):snapshot.data!.get('data_of_computer',defaultValue:simdata);
           Map<String, List<dynamic>> simdata =(widget.user != " "? snapshot.data!.get('userdata', defaultValue: widget.data): snapshot.data!.get('data_of_computer', defaultValue: widget.data)).cast<String, List<dynamic>>();
           //print(snapshot.data!.get('userdata'));
-          print(simdata);
+          //print(simdata);
+          
           return Scaffold(
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -957,13 +964,13 @@ class Simparastate extends State<Sim_para> {
                               double nt=n*simtimes/timestep*1000;
                               return AlertDialog(
                                 title:Text("INFO",style:TextStyle(fontSize:25)),
-                                content:Text("A total of $nt calculations will be done. please check if your computer is RAM capable.also a total of $n calculation res;uts will be displayed in $timestep ms when you proceed.                             gdfvnbjn                           ",style:TextStyle(fontSize:18)),
+                                content:Text("A total of $nt calculations will be done. please check if your computer is RAM capable.also a total of $n calculation res;uts will be displayed in $timestep ms when you proceed.",style:TextStyle(fontSize:18)),
                                 actions:[OutlinedButton(onPressed: (){Navigator.of(context).pop();setState((){});},child:Text("Ok",style:TextStyle(fontSize:18)))]
                               );
                             },);
                           })),
                           if(checked) FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:()async{
-                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);})); setState((){});}
+                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);})); setState((){});}
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),
@@ -973,11 +980,11 @@ class Simparastate extends State<Sim_para> {
                             },);}
                           },child:Text("Simulate",style:TextStyle(color: Colors.white))),
                           FloatingActionButton(heroTag:null,tooltip:"add new body",child:Icon(Icons.add,size:30),onPressed:(){n+=1;simdata[simtitle]!.add(BodyDetails("Body $n",[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1));widget.user!=" "?snapshot.data!.put('userdata',simdata):snapshot.data!.put('data_of_computer',simdata);setState((){});}),
-                          MenuAnchor(
+                          /*MenuAnchor(
                             menuChildren:[TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
                             
                             builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}});}
-                          )
+                          )*/
                         ])
                       ],)
                     ),

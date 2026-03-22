@@ -107,45 +107,54 @@ class _MyHomePageState extends State<MyHomePage> {
                   if(r){
                     Navigator.of(context).pop();
                   }
-                  return AlertDialog(
-                    title:Text("Add Title"),
-                    actions:[
-                      TextField(
-                        style:TextStyle(color:Colors.black,fontSize:20),
-                        onChanged:(text){
-                          
-                          if (text.isEmpty){
-                            show=1;
+                  if(data.length>40 && user==" "){
+                    return AlertDialog(
+                      title:Text("Warning",style:TextStyle(fontSize:20)),
+                      content:Text("cant add more sims due to performance issues"),
+                      actions: [OutlinedButton(onPressed:(){Navigator.of(context).pop;},child: Text("Ok"),)],);
+                  }
+                  else{
+                    return AlertDialog(
+                      title:Text("Add Title"),
+                      actions:[
+                        TextField(
+                          style:TextStyle(color:Colors.black,fontSize:20),
+                          onChanged:(text){
+                            
+                            if (text.isEmpty){
+                              show=1;
+                            }
+                            else if ( data.keys.toList().contains(text)){
+                              show=2;
+                            }
+                            else{
+                              texti=text;
+                              show=0; 
+                              //setState((){});
+                            }
+                            setStateDialog((){});
                           }
-                          else if ( data.keys.toList().contains(text)){
-                            show=2;
-                          }
-                          else{
-                            texti=text;
-                            show=0; 
-                            //setState((){});
-                          }
+                        ),
+                        if (show!=0)Icon(Icons.error),
+                        if(show==1) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("the title cant be empty"))]),
+                        if (show==2) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("you have already used this title in your simulations"))]),
+                        OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
+                        if (show==0) OutlinedButton(child:Text("Create"),onPressed:()async{
+                          data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
                           setStateDialog((){});
-                        }
-                      ),
-                      if (show!=0)Icon(Icons.error),
-                      if(show==1) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("the title cant be empty"))]),
-                      if (show==2) Row(textDirection: TextDirection.rtl,children:[Expanded(child:Text("you have already used this title in your simulations"))]),
-                      OutlinedButton(child:Text("cancel"),onPressed:(){Navigator.of(context).pop();}),
-                      if (show==0) OutlinedButton(child:Text("Create"),onPressed:()async{
-                        data[texti]=[BodyDetails('Body 1',[0,0,0],[0,0,0],[0,0,0],0, Colors.grey.toARGB32(),1),BodyDetails('Body 2',[0,0,0],[0,0,0],[0,0,0],0,Colors.grey.toARGB32(),1)];
-                        setStateDialog((){});
-                        setState((){});
-                        user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);
-                        r=await Navigator.of(context).push(MaterialPageRoute(builder: (context){
-                          if (MediaQuery.sizeOf(context).width>=1024){return Sim_para(user:user,title:texti,coordinates:data[texti],data:data);}
-                          else if (MediaQuery.sizeOf(context).width>=600){return Sim_para_tab(user:user,title:texti,coordinates:data[texti],data:data);}
-                          else {return Sim_para_phone(user:user,title:texti,coordinates:data[texti],data:data);}
-                        }));
-                        setStateDialog((){});
-                      })
-                    ]
-                  );
+                          setState((){});
+                          user != " "?snapshot.data!.put('userdata',data):snapshot.data!.put('data_of_computer',data);
+                          r=await Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                            if (MediaQuery.sizeOf(context).width>=1024){return Sim_para(user:user,title:texti,coordinates:data[texti],data:data);}
+                            else if (MediaQuery.sizeOf(context).width>=600){return Sim_para_tab(user:user,title:texti,coordinates:data[texti],data:data);}
+                            else {return Sim_para_phone(user:user,title:texti,coordinates:data[texti],data:data);}
+                          }));
+                          setStateDialog((){});
+                        })
+                      ]
+                    );
+                  }
+                  
                 } ,
               );
             }
@@ -258,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
-          print(data);
+          //print(data);
           return Scaffold(
             appBar:  AppBar(
               //bottom: MediaQuery.sizeOf(context).width>=600?null:PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
@@ -294,13 +303,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.all(20),
-                    height:MediaQuery.of(context).size.height-194,
+                    height:MediaQuery.of(context).size.height-186,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha:0.65),
                       borderRadius: BorderRadius.circular(10),
                       border: BoxBorder.all(width: 1, color: Colors.white),
                     ),
-                    child: Column(
+                    child: Column(spacing:30,
                       children: [
                         Text(
                           textAlign: TextAlign.end,
@@ -495,7 +504,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //final valuesc = dataComputer.values.toList();
           final keys = data.keys.toList();
           final values = data.values.toList();
-          print(data);
+          //print(data);
           return Scaffold(
             appBar:  AppBar(
               bottom: PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
@@ -526,13 +535,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.all(5),
-                    height:MediaQuery.of(context).size.height-134,
+                    height:MediaQuery.of(context).size.height-126,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha:0.65),
                       borderRadius: BorderRadius.circular(5),
                       border: BoxBorder.all(width: 1, color: Colors.white),
                     ),
-                    child: Column(
+                    child: Column(spacing:20,
                       children: [
                         Text(
                           textAlign: TextAlign.end,
@@ -551,7 +560,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             style: TextStyle(
                               color: const Color.fromARGB(255, 14, 106, 182),
                               fontWeight: FontWeight.bold,
-                              fontSize: 25,
+                              fontSize: 20,
                             ),
                           ),
                           actions: [
@@ -759,7 +768,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SingleChildScrollView(
                   child: Container(
                     padding: EdgeInsets.all(20),
-                    height:MediaQuery.of(context).size.height-164,
+                    height:MediaQuery.of(context).size.height-156,
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha:0.65),
                       borderRadius: BorderRadius.circular(10),

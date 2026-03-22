@@ -3,10 +3,12 @@ import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:three_js_objects/three_js_objects.dart';
 import 'package:three_js/three_js.dart' as three;
 import 'package:three_js_math/three_js_math.dart' as tmath;
+import 'dart:math';
+import 'dart:async';
 //import 'package:three_js_geometry/three_js_geometry.dart';
 
 class Sim extends StatefulWidget {
-  const Sim({super.key, required this.title, required this.simulation,required this.user, required this.timestep,required this.speed, required this.simtime, required this.centroids});
+  const Sim({super.key, required this.title, required this.simulation,required this.user, required this.timestep,required this.speed, required this.simtime, required this.centroids,required this.simdata,required this.radius});
   final String title;
   final List<List<List<double>>> simulation;
   final String user;
@@ -14,10 +16,13 @@ class Sim extends StatefulWidget {
   final double speed;
   final int simtime;
   final List<three.Vector3> centroids;
+  final Map<String,List<dynamic>> simdata;
+  final double radius;
   @override
   State<Sim> createState() => Simstate();
 }
 class Simstate extends State<Sim> {
+  bool intita=false;
   late String simtitle;
   late List<List<List<double>>> animdata;
   late Future<Box> future;
@@ -28,44 +33,87 @@ class Simstate extends State<Sim> {
   List<int> yaw=[];
   double xf=0, yf=0,zf=0;
   double zoom=1,size=1;
+  List<three.Mesh> objects=[];
   //Sky sky=Sky();
-  
+  late Map<String, List<dynamic>> simdata;
   @override
   void initState() {
+    
     threeJs = three.ThreeJS(
-      onSetupComplete: (){setState(() {});},
+      onSetupComplete: (){setState(() {intita=true;});animate();},
       setup: setup,
     );
+
     super.initState();
+    simdata= widget.simdata;
     simtitle=widget.title;
     animdata=widget.simulation;
     user=widget.user;
     centroids=widget.centroids;
+    
     future = Hive.openBox('data');    
   }
-
+  
   //late three.AmbientLight ambientlight;
   double ambientlightint=0.5;
   Future<void> setup() async{
+    double fovRadians = 45 * (pi / 180);
+    // Use an offset (e.g., 1.2) to add a small margin around the points
+    double distance = (widget.radius / sin(fovRadians / 2)) * 1.2;
+    print(distance);
     threeJs.camera = three.PerspectiveCamera(45, threeJs.width / threeJs.height, 1, 2200);
-    threeJs.camera.position.setValues(30, 60, 100);
+    threeJs.camera.position.setValues(centroids[centroids.length-1].x,centroids[centroids.length-1].y,centroids[centroids.length-1].z+distance);
+
+    //threeJs.camera.position.setValues(centroids[centroids.length-1].x,centroids[centroids.length-1].y,centroids[centroids.length-1].z+dist);
+    //threeJs.camera.up=three.Vector3(0, 1, 0); 
     threeJs.camera.lookAt(centroids[centroids.length-1]);    
+    
     threeJs.scene = three.Scene();
     final ambientlight=three.AmbientLight(0xffffff,ambientlightint);
     threeJs.scene.add(ambientlight);
     threeJs.scene.add(threeJs.camera);
-    three.Mesh object;
+    //threeJs.camera.lookAt(threeJs.scene.position);
 
-    threeJs.camera.lookAt(threeJs.scene.position);
-    for (List k in widget.simulation[0]){
-      final material = three.MeshBasicMaterial.fromMap({"color":Colors.amber.toARGB32()});
-      object = three.Mesh(three.SphereGeometry(k[6]), material);
-      
-      object.position.setValues(k[0],k[1],k[2]);
+    final material = three.MeshBasicMaterial.fromMap({"color":Colors.grey.toARGB32()});
+    three.Mesh object=three.Mesh(three.SphereGeometry(1), material);    
+    
+    for (int k =0;k< widget.simulation[0].length;k++){
+      final material = three.MeshBasicMaterial.fromMap({"color":widget.simdata[simtitle]![k].color});
+      object = three.Mesh(three.SphereGeometry(widget.simulation[0][k][6]), material);
+      object.position.setValues(widget.simulation[0][k][0],widget.simulation[0][k][1],widget.simulation[0][k][2]);
+      //three.AnimationMixer mixer=three.AnimationMixer(object);
       threeJs.scene.add(object);
+      objects.add(object);
+    }
+    
+    //threeJs.renderer=three.WebGLRenderer(parameters)
+    //threeJs.renderer
+  }
+  Future<void> animate() async {
+    for (int m = 0; m < widget.simulation.length; m++) {
+
+      for (int d = 0; d < objects.length; d++) {
+        objects[d].position.setValues(
+          widget.simulation[m][d][0],
+          widget.simulation[m][d][1],
+          widget.simulation[m][d][2],
+        );
+      }
+
+      threeJs.render(
+        threeJs.scene,
+        threeJs.camera,
+        threeJs.texture,
+        widget.timestep / 1000,
+      );
+
+
+      await Future.delayed(
+        Duration(milliseconds: (widget.timestep).toInt()),
+      );
     }
   }
-
+  
   late three.ThreeJS threeJs;
 
   @override
@@ -74,30 +122,34 @@ class Simstate extends State<Sim> {
       future:future ,
       builder:(context, snapshot) {
         if(snapshot.connectionState == ConnectionState.done){
-          //print(animdata);
           Map<String, List<dynamic>> simdata =(user != " "? snapshot.data!.get('userdata'): snapshot.data!.get('data_of_computer')).cast<String, List<dynamic>>();
+          /*if(!intita){
+            return const Center(child: CircularProgressIndicator()); 
+          }*/
           return Scaffold(
             appBar:AppBar(
               leading:FloatingActionButton(heroTag:null,tooltip:"go back to edit your dataset",onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
               title:Text(simtitle,style:TextStyle(fontSize:25)),
               actions:[
                 Icon(Icons.info_outline),
-                Text("wasd or arrow keys can be used when paused scene only"),
+                //Text("wasd or arrow keys can be used when paused scene only"),
                 FloatingActionButton(heroTag:null,tooltip:"play scene-continue animation",backgroundColor:Colors.white,child: Icon(Icons.play_arrow,color:Colors.green),onPressed:(){}),
                 FloatingActionButton(heroTag:null,tooltip:"pause scene",backgroundColor:Colors.white,child: Icon(Icons.pause,color:Colors.green),onPressed:(){}),
-                Text("SimSpeed",style:TextStyle(fontSize:20)),
+                /*Text("SimSpeed",style:TextStyle(fontSize:20)),
                 FloatingActionButton(heroTag:null,backgroundColor:Colors.white,child: Icon(Icons.add,color:Colors.green),onPressed:(){}),
                 FloatingActionButton(heroTag:null,backgroundColor:Colors.white,child: Icon(Icons.remove,color:Colors.green),onPressed:(){}),
                 MenuAnchor(
                   builder:(BuildContext context, MenuController controller,Widget? child){return IconButton(icon: Icon(Icons.download),onPressed:(){if (controller.isOpen){controller.close();} else{controller.open();}});} ,
                   menuChildren: [TextButton(child: Text("Download data"),onPressed:(){}),TextButton(child: Text("Download frames"),onPressed:(){}),TextButton(child: Text("Download video animation"),onPressed:(){})],
-                ),
+                ),*/
 
               ]
             ),
-            body: threeJs.build(),
+            body:intita==false?threeJs.build():LayoutBuilder(builder:(context,constraints){double finalHeight = constraints.maxHeight;double finalWidth = constraints.maxWidth;threeJs.camera.aspect = finalWidth / finalHeight;threeJs.camera.updateProjectionMatrix();return SizedBox( // Forces the 3D view to take up all available space
+              height:finalHeight,width:finalWidth,child: threeJs.build(),
+            );}),
             
-            bottomNavigationBar:BottomAppBar(child:Row(children:[
+            /*bottomNavigationBar:BottomAppBar(child:Row(children:[
               
               MenuAnchor(
                 //style:MenuStyle(backgroundColor:WidgetStateColor.fromMap({WidgetState.any:Colors.})),
@@ -137,7 +189,7 @@ class Simstate extends State<Sim> {
                 Text("Ambient Light(%)",style:TextStyle(fontSize: 15))
               ],)
               //TextButton(onPressed:(){},onHover:(value){ Tooltip(message:"This is used to set the scene so that it will accomodate the best position to view current frame");},child:Text("Dynamic scene"))
-            ]))
+            ]))*/
           ); 
         }
         else{

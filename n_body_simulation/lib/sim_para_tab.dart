@@ -3,7 +3,7 @@ import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 //import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'package:three_js/three_js.dart' as three;
 class CalcParams {
@@ -30,11 +30,13 @@ class Simparastatetab extends State<Sim_para_tab> {
   // ignore: non_constant_identifier_names
   List<List<List<double>>> animation=[];//[[px,py,pz,vz,vy,vz]- of each body , mx, my, mz] - of each frame
   List<three.Vector3> centroids=[];
+  double radius=100;
   bool isCalculating=false;
   void mist(){
     print("uwsnvdj");
   }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
+    List<three.Vector3> pointgrp=[];
     double dt=sp1*timestep;
     //print(dt);
     List<List<double>> L=[];
@@ -89,6 +91,7 @@ class Simparastatetab extends State<Sim_para_tab> {
         mz+=pz;*/
         //print([px,py,pz,vx,vy,vz]);
         L.add([px,py,pz,vx,vy,vz]);
+        pointgrp.add(three.Vector3(px,py,pz));
       }
       /*mx/=simdata[simtitle].length;
       my/=simdata[simtitle].length;
@@ -104,6 +107,13 @@ class Simparastatetab extends State<Sim_para_tab> {
     centroids.add(g);
     print(centroids);
     print(animation);
+    final boundingBox = three.BoundingBox().setFromPoints(pointgrp);
+    final center = three.Vector3();
+    boundingBox.getCenter(center);
+    final size = three.Vector3();
+    boundingBox.getSize(size);
+    double maxdim=max(size.x,max(size.y,size.z));
+    radius = maxdim / 2;
     setState((){});
   }
   
@@ -241,16 +251,6 @@ class Simparastatetab extends State<Sim_para_tab> {
     ];
     //MenuController controller=MenuController(:);
     //if(pop==true){pop=false; Navigator.of(context).pop;};
-    String nowcolor(){
-      for  (int k=0; k<colopal.length; ){
-        if (simdata[simtitle][i].color==colopal[k]){
-          return colopalNames[k];
-        }
-        
-      }
-      return " ";
-    }
-    
     return StatefulBuilder(
       builder:(context,
       setStatebody){
@@ -835,7 +835,7 @@ class Simparastatetab extends State<Sim_para_tab> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:25)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -988,7 +988,7 @@ class Simparastatetab extends State<Sim_para_tab> {
                             },);
                           })),
                           if(checked) FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:()async{
-                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);})); setState((){});}
+                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);})); setState((){});}
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),

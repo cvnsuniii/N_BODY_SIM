@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import "simulation.dart";
+//import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 //import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'package:three_js/three_js.dart' as three;
 class CalcParams {
@@ -241,16 +241,6 @@ class Simparastatephone extends State<Sim_para_phone> {
     ];
     //MenuController controller=MenuController(:);
     //if(pop==true){pop=false; Navigator.of(context).pop;};
-    String nowcolor(){
-      for  (int k=0; k<colopal.length; ){
-        if (simdata[simtitle][i].color==colopal[k]){
-          return colopalNames[k];
-        }
-        
-      }
-      return " ";
-    }
-    
     return StatefulBuilder(
       builder:(context,
       setStatebody){
@@ -833,7 +823,7 @@ class Simparastatephone extends State<Sim_para_phone> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:20)),
-              //actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -987,7 +977,7 @@ class Simparastatephone extends State<Sim_para_phone> {
                             },);
                           })),
                           if(checked) FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:()async{
-                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids);})); setState((){});}
+                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);setState((){});}
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),
