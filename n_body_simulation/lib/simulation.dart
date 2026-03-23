@@ -60,8 +60,8 @@ class Simstate extends State<Sim> {
     double fovRadians = 45 * (pi / 180);
     // Use an offset (e.g., 1.2) to add a small margin around the points
     double distance = (widget.radius / sin(fovRadians / 2)) * 1.2;
-    //print(distance);
-    threeJs.camera = three.PerspectiveCamera(45, threeJs.width / threeJs.height, 1, 2200);
+    print(distance);
+    threeJs.camera = three.PerspectiveCamera(45, threeJs.width / threeJs.height, 1, distance*2);
     threeJs.camera.position.setValues(centroids[centroids.length-1].x,centroids[centroids.length-1].y,centroids[centroids.length-1].z+distance);
 
     //threeJs.camera.position.setValues(centroids[centroids.length-1].x,centroids[centroids.length-1].y,centroids[centroids.length-1].z+dist);

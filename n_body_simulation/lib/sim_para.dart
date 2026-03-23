@@ -3,7 +3,7 @@ import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
-//import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 //import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'package:three_js/three_js.dart' as three;
 class CalcParams {
@@ -35,7 +35,7 @@ class Simparastate extends State<Sim_para> {
   void mist(){
     //print("uwsnvdj");
   }
-  void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
+  List<List<List<double>>> calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     animation=[];
     centroids=[];
     List<three.Vector3> pointgrp=[];
@@ -120,11 +120,12 @@ class Simparastate extends State<Sim_para> {
     radius = maxdim / 2;
     
     setState((){});
+    return animation;
   }
   
-  /*void calculateTask(CalcParams params) {
+  void calculateTask(CalcParams params) {
     calculate(params.simdata, params.timestep, params.sp1, params.simtimes);
-  }*/
+  }
   
   late String simtitle;
   late Map<String, List<dynamic>> simdata;
@@ -821,7 +822,7 @@ class Simparastate extends State<Sim_para> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:30)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{await compute(calculateTask,CalcParams(simdata, timestep, sp1, simtimes),); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);}));setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
@@ -972,7 +973,7 @@ class Simparastate extends State<Sim_para> {
                             },);
                           })),
                           if(checked) FloatingActionButton(heroTag:null,backgroundColor:Colors.blueAccent,onPressed:()async{
-                            if(chkdist()){calculate(simdata, timestep, sp1, simtimes);await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);})); setState((){});}
+                            if(chkdist()){final animation= calculate(simdata, timestep, sp1, simtimes); await Navigator.of(context).push(MaterialPageRoute(builder: (context){return Sim(title:simtitle,simulation:animation,user:widget.user,timestep:timestep,speed:sp1,simtime:simtimes,centroids:centroids,simdata:simdata,radius:radius);})); setState((){});}
                             else {showDialog(context:context,builder:(BuildContext context) {
                               return AlertDialog(
                                 title:Text("Warning",style:TextStyle(fontSize:25)),

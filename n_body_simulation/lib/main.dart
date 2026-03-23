@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 //import 'package:build_runner/build_runner.dart';
 //import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'login.dart';
-import 'login_phone.dart';
+//import 'login.dart';
+//import 'login_phone.dart';
 import 'sim_para.dart';
 import 'sim_para_tab.dart';
 import 'sim_para_phone.dart';
@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }   
 
-  List<Widget> appbar(BuildContext context,snapshot,data){return [
+  /*List<Widget> appbar(BuildContext context,snapshot,data){return [
     Text(
       "Welcome, $user",
       style: TextStyle(
@@ -248,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
         style: TextStyle(fontWeight: FontWeight.bold),
       ),
     ),
-  ];}
+  ];}*/
   Widget computer(BuildContext context){
     return FutureBuilder(
       future: future,
@@ -281,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontSize: 40,
                 ),
               ),
-              actions: appbar(context,snapshot,data),
+              //actions: appbar(context,snapshot,data),
             ),
 
             body: Center(
@@ -507,7 +507,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //print(data);
           return Scaffold(
             appBar:  AppBar(
-              bottom: PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
+              //bottom: PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
               actionsPadding: EdgeInsets.only(right: 20, top: 5, bottom: 5),
               backgroundColor: const Color.fromARGB(255, 35, 35, 35),
               leading: Image(image: AssetImage("assets/images/aac_logo.png")),
