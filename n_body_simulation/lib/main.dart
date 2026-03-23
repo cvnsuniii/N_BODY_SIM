@@ -739,7 +739,7 @@ class _MyHomePageState extends State<MyHomePage> {
           final values = data.values.toList();
           //print(data);
           return Scaffold(
-            appBar:  AppBar(
+            /*appBar:  AppBar(
               //bottom: MediaQuery.sizeOf(context).width>=600?null:PreferredSize(preferredSize:Size.fromHeight(30.0),child:Row(children:appbar(context,snapshot,data))),
               actionsPadding: EdgeInsets.only(right: 20, top: 5, bottom: 5),
               backgroundColor: const Color.fromARGB(255, 35, 35, 35),
@@ -752,7 +752,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               actions: appbar(context,snapshot,data),
-            ),
+            ),*/
 
             body: Center(
               child: Container(

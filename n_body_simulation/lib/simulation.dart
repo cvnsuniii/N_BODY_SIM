@@ -131,10 +131,10 @@ class Simstate extends State<Sim> {
               leading:FloatingActionButton(heroTag:null,tooltip:"go back to edit your dataset",onPressed:(){Navigator.of(context).pop();},child:Icon(Icons.arrow_back,size:20)),
               title:Text(simtitle,style:TextStyle(fontSize:25)),
               actions:[
-                Icon(Icons.info_outline),
+                //Icon(Icons.info_outline),
                 //Text("wasd or arrow keys can be used when paused scene only"),
-                FloatingActionButton(heroTag:null,tooltip:"play scene-continue animation",backgroundColor:Colors.white,child: Icon(Icons.play_arrow,color:Colors.green),onPressed:(){}),
-                FloatingActionButton(heroTag:null,tooltip:"pause scene",backgroundColor:Colors.white,child: Icon(Icons.pause,color:Colors.green),onPressed:(){}),
+                //FloatingActionButton(heroTag:null,tooltip:"play scene-continue animation",backgroundColor:Colors.white,child: Icon(Icons.play_arrow,color:Colors.green),onPressed:(){}),
+                //FloatingActionButton(heroTag:null,tooltip:"pause scene",backgroundColor:Colors.white,child: Icon(Icons.pause,color:Colors.green),onPressed:(){}),
                 /*Text("SimSpeed",style:TextStyle(fontSize:20)),
                 FloatingActionButton(heroTag:null,backgroundColor:Colors.white,child: Icon(Icons.add,color:Colors.green),onPressed:(){}),
                 FloatingActionButton(heroTag:null,backgroundColor:Colors.white,child: Icon(Icons.remove,color:Colors.green),onPressed:(){}),

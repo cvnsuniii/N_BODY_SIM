@@ -64,9 +64,9 @@ class Simparastatephone extends State<Sim_para_phone> {
 
           num r=pow((pow((l[d][0]-px),2)+pow((l[d][1]-py),2)+pow((l[d][2]),2)),0.5);
           if (r!=0){
-            ax+=G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
-            ay+=G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
-            az+=G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
+            ax+=-G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
+            ay+=-G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
+            az+=-G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
 
             px+=vx*dt+0.5*ax*dt*dt;
             py+=vy*dt+0.5*ay*dt*dt;
