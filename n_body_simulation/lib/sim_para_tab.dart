@@ -38,7 +38,7 @@ class Simparastatetab extends State<Sim_para_tab> {
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     animation=[];
     List<three.Vector3> pointgrp=[];
-    double dt=sp1*timestep;
+    double dt=sp1*timestep/1000;
     //print(dt);
     List<List<double>> L=[];
     three.Vector3 x=three.Vector3(0,0,0);
@@ -65,26 +65,25 @@ class Simparastatetab extends State<Sim_para_tab> {
         double ax=0,ay=0,az=0,vx=l[m][3],vy=l[m][4],vz=l[m][5],px=l[m][0],py=l[m][1],pz=l[m][2];
         for (int d=0; d<simdata[simtitle]!.length.toInt();d++){
 
-          num r=pow((pow((l[d][0]-px),2)+pow((l[d][1]-py),2)+pow((l[d][2]),2)),0.5);
+          num r=pow((pow((l[d][0]-l[m][0]),2)+pow((l[d][1]-l[m][1]),2)+pow((l[d][2]-l[m][2]),2)),0.5);
           if (r!=0){
             ax+=-G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
             ay+=-G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
             az+=-G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
 
-            px+=vx*dt+0.5*ax*dt*dt;
-            py+=vy*dt+0.5*ay*dt*dt;
-            px+=vz*dt+0.5*az*dt*dt;
-            vx+=ax*dt;
-            vy+=ay*dt;
-            vz+=az*dt;
+        
 
           }
           else{
           }
 
-
-
         }
+        px+=vx*dt+0.5*ax*dt*dt;
+        py+=vy*dt+0.5*ay*dt*dt;
+        px+=vz*dt+0.5*az*dt*dt;
+        vx+=ax*dt;
+        vy+=ay*dt;
+        vz+=az*dt;
         x.add(three.Vector3(px,py,pz));
         g.add(three.Vector3(px,py,pz));
         /*mx+=px;
