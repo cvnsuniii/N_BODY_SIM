@@ -3,7 +3,7 @@ import "simulation.dart";
 import 'bodyclass.dart';
 import 'package:hive/hive.dart';
 import 'dart:math';
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 //import 'package:three_js_math/three_js_math.dart' as tmath;
 import 'package:three_js/three_js.dart' as three;
 class CalcParams {
