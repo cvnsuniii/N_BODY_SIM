@@ -34,6 +34,66 @@ class Simparastatephone extends State<Sim_para_phone> {
   void mist(){
     //print("uwsnvdj");
   }
+    List<List<List<double>>> calculate22(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
+    animation=[];
+    centroids=[];
+
+    List<three.Vector3> pointgrp=[];
+    double dt=sp1*timestep/1000;
+
+    List<List<double>> L=[];
+    for(int k=0; k<simdata[simtitle]!.length.toInt();k++){
+      //simdata[simtitle]![k].lastValue.tothree.Vector3();
+      List<double> kk=simdata[simtitle]![k].lastValue+(simdata[simtitle]![k].lastVelocities);
+      kk.add(simdata[simtitle]![k].radius);
+      L.add(kk);
+      //L.add();
+    }
+    animation.add(L);
+    //print(animation);
+    L=[];
+    for (int k=0; k<(simtimes*1000/timestep).toInt();k++){
+      List<List<double>> l=animation[animation.length-1];
+      for (int m=0; m<simdata[simtitle]!.length.toInt();m++){
+        double ax=0,ay=0,az=0,vx=l[m][3],vy=l[m][4],vz=l[m][5],px=l[m][0],py=l[m][1],pz=l[m][2];
+        for (int d=0; d<simdata[simtitle]!.length.toInt();d++){
+          num r=pow((pow((l[d][0]-l[m][0]),2)+pow((l[d][1]-l[m][1]),2)+pow((l[d][2]-l[m][2]),2)),0.5);
+          
+          if (r!=0){
+            ax+=-G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
+            ay+=-G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
+            az+=-G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);         }
+          else{
+          }
+        }
+        px+=vx*dt+0.5*ax*dt*dt;
+        py+=vy*dt+0.5*ay*dt*dt;
+        pz+=vz*dt+0.5*az*dt*dt;
+        vx+=ax*dt;
+        vy+=ay*dt;
+        vz+=az*dt;
+        /*mx+=px;
+        my+=py;
+        mz+=pz;*/
+        //print([px,py,pz,vx,vy,vz]);
+        pointgrp.add(three.Vector3(px,py,pz));
+        L.add([px,py,pz,vx,vy,vz]);
+      }
+      /*mx/=simdata[simtitle].length;
+      my/=simdata[simtitle].length;
+      mz/=simdata[simtitle].length;*/
+      //print(L);
+      animation.add(L);
+      L=[];
+    }
+    //print(centroids);
+    //print(animation);
+    
+    
+    
+    setState((){});
+    return animation;
+  }
   void calculate(Map<String,List<dynamic>> simdata, timestep, sp1,simtimes){
     double dt=sp1*timestep/1000;
     //print(dt);
@@ -64,16 +124,16 @@ class Simparastatephone extends State<Sim_para_phone> {
 
           num r=pow((pow((l[d][0]-l[m][0]),2)+pow((l[d][1]-l[m][1]),2)+pow((l[d][2]-l[m][2]),2)),0.5);
           if (r!=0){
-            ax+=-G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r);
-            ay+=-G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r);
-            az+=-G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r);
+            ax+=(-G*simdata[simtitle]![d].mass*(l[m][0]-l[d][0])/(r*r*r));
+            ay+=(-G*simdata[simtitle]![d].mass*(l[m][1]-l[d][1])/(r*r*r));
+            az+=(-G*simdata[simtitle]![d].mass*(l[m][2]-l[d][2])/(r*r*r));
           }
           else{
           }
         }
         px+=vx*dt+0.5*ax*dt*dt;
         py+=vy*dt+0.5*ay*dt*dt;
-        px+=vz*dt+0.5*az*dt*dt;
+        pz+=vz*dt+0.5*az*dt*dt;
         vx+=ax*dt;
         vy+=ay*dt;
         vz+=az*dt;
@@ -648,7 +708,7 @@ class Simparastatephone extends State<Sim_para_phone> {
     }
     //till 1 hr shows min and sec
     else if (time<3600000){
-      time%60000!=0?str="${time~/60000} min ${(time%60000)/1000} s":"${time/60000} min";
+      time%60000!=0?str="${time~/60000} min ${(time%60000)/1000} s":str="${time~/60000} min";
     }
     //till 1 fucking day - shows hrs and min
     else if (time<86400000){
@@ -818,7 +878,7 @@ class Simparastatephone extends State<Sim_para_phone> {
             appBar:AppBar(
               leading:FloatingActionButton(tooltip:"go back.some changes may be saved.",heroTag: null,onPressed:( (){Navigator.of(context).pop(true);}),child:Icon(Icons.arrow_back,size:20)),
               title:Text("Simulation Parameters",style:TextStyle(color:Colors.black,fontSize:20)),
-              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate(simdata, timestep, sp1, simtimes,); setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
+              actions:[if(checked) FloatingActionButton(heroTag: null,backgroundColor:Colors.blueAccent,onPressed:()async{calculate22(simdata, timestep, sp1, simtimes,); setState((){});},child:Text("Simulate",style:TextStyle(color: Colors.white)))]
             ),
             body:Center(
               child: Container(
